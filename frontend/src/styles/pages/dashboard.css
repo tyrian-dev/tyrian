@@ -1,0 +1,49 @@
+/* Page-specific styles ported from tyrian-site/dashboard.html.
+   Scoped to .page-dashboard so they do not leak across routes. */
+
+.page-dashboard .dash{display:grid;grid-template-columns:minmax(280px,1fr) 1.6fr;gap:20px}
+.page-dashboard .dash > *{min-width:0}
+.page-dashboard .pools-wrap{overflow-x:auto}
+.page-dashboard .meter-panel{display:flex;flex-direction:column;align-items:center;justify-content:center;gap:18px;text-align:center}
+.page-dashboard .meter-stats{display:grid;grid-template-columns:1fr 1fr;gap:10px;width:100%}
+.page-dashboard .meter-stats div{padding:12px;border:1px solid var(--border);border-radius:12px;text-align:left}
+.page-dashboard .meter-stats small{display:block;font-size:12px;color:var(--text-muted)}
+.page-dashboard .meter-stats b{font:500 16px "JetBrains Mono";font-weight:500}
+.page-dashboard .pools{width:100%;border-collapse:collapse;font-size:14px}
+.page-dashboard .pools th{text-align:left;font:500 11px "JetBrains Mono";letter-spacing:.06em;text-transform:uppercase;color:var(--text-muted);padding:0 0 10px}
+.page-dashboard .pools td{padding:12px 0;border-top:1px solid var(--border)}
+.page-dashboard .pools .num{text-align:right;font-family:"JetBrains Mono",monospace;font-variant-numeric:tabular-nums}
+.page-dashboard .sharebar{height:4px;border-radius:4px;background:var(--surface-2);margin-top:6px;overflow:hidden;max-width:140px}
+.page-dashboard .sharebar i{display:block;height:100%;background:var(--series-2);border-radius:4px}
+.page-dashboard .usage-head{display:flex;justify-content:space-between;align-items:end;gap:16px;flex-wrap:wrap;margin-bottom:12px}
+.page-dashboard .usage-head .big{font:500 28px "JetBrains Mono"}
+.page-dashboard .mix{display:grid;gap:10px;margin-top:6px}
+.page-dashboard .mix div{display:grid;grid-template-columns:110px 1fr 56px;gap:10px;align-items:center;font-size:14px}
+.page-dashboard .mix .bar{height:8px;border-radius:4px;background:var(--surface-2);overflow:hidden}
+.page-dashboard .mix .bar i{display:block;height:100%;background:var(--series-1);border-radius:4px}
+.page-dashboard .mix .pct{text-align:right;font:500 13px "JetBrains Mono"}
+.page-dashboard .keybox{display:flex;align-items:center;gap:10px;padding:14px;border-radius:12px;border:1px solid var(--gold-500);background:var(--bg);margin:14px 0}
+.page-dashboard .keybox code{flex:1;font:500 14px "JetBrains Mono";overflow-wrap:anywhere}
+.page-dashboard .gate{display:flex;justify-content:space-between;align-items:center;gap:16px;flex-wrap:wrap}
+@media (min-width:961px){
+.page-dashboard .usage-grid{grid-template-columns:1.6fr 1fr}
+}
+@media (max-width:960px){
+.page-dashboard .dash{grid-template-columns:minmax(0,1fr)}
+}
+@media (max-width:720px){
+.page-dashboard #keysTable thead{display:none}
+.page-dashboard #keysTable tr{display:grid;grid-template-columns:1fr 1fr;gap:6px 12px;padding:14px 16px;border-bottom:1px solid var(--border)}
+.page-dashboard #keysTable td{padding:0;border:0}
+.page-dashboard #keysTable td[data-l]::before{content:attr(data-l);display:block;font:500 11px "JetBrains Mono";color:var(--text-muted);text-transform:uppercase;letter-spacing:.06em}
+.page-dashboard #keysTable td:first-child, .page-dashboard #keysTable td:last-child{grid-column:1/-1}
+.page-dashboard #keysTable td.num{text-align:left}
+}
+
+@media (max-width:480px){
+.page-dashboard .meter-stats{grid-template-columns:1fr}
+.page-dashboard .mix div{grid-template-columns:1fr auto}
+.page-dashboard .mix .bar{grid-column:1/-1;order:3}
+.page-dashboard #keysTable tr{grid-template-columns:1fr;gap:8px}
+.page-dashboard .gate{flex-direction:column;align-items:flex-start}
+}

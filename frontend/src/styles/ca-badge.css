@@ -1,0 +1,206 @@
+/* ==========================================================================
+   CA (Contract Address) & TBA Badge Styles
+   ========================================================================== */
+
+.tyr-ca-badge {
+  display: inline-flex;
+  align-items: center;
+  gap: 10px;
+  background: rgba(18, 0, 9, 0.7);
+  border: 1px solid var(--border);
+  border-radius: 999px;
+  padding: 6px 14px 6px 12px;
+  font-family: "JetBrains Mono", monospace;
+  font-size: 12px;
+  line-height: 1.2;
+  color: var(--text-muted);
+  box-shadow: 0 4px 16px rgba(0, 0, 0, 0.25);
+  backdrop-filter: blur(12px);
+  -webkit-backdrop-filter: blur(12px);
+  transition: border-color 0.2s ease, background 0.2s ease, box-shadow 0.2s ease;
+  user-select: none;
+  position: relative;
+}
+
+.tyr-ca-badge:hover {
+  border-color: rgba(201, 162, 74, 0.35);
+  background: rgba(28, 4, 16, 0.85);
+  box-shadow: 0 6px 20px rgba(102, 2, 60, 0.2);
+}
+
+/* Status Indicator Dot */
+.tyr-ca-status-dot {
+  width: 7px;
+  height: 7px;
+  border-radius: 50%;
+  flex-shrink: 0;
+}
+
+.tyr-ca-badge.is-tba .tyr-ca-status-dot {
+  background: #eab308;
+  box-shadow: 0 0 8px rgba(234, 179, 8, 0.6);
+  animation: tyr-pulse-amber 2s infinite ease-in-out;
+}
+
+.tyr-ca-badge.is-live .tyr-ca-status-dot {
+  background: var(--success, #22c55e);
+  box-shadow: 0 0 8px rgba(34, 197, 94, 0.5);
+}
+
+@keyframes tyr-pulse-amber {
+  0%, 100% {
+    opacity: 1;
+    transform: scale(1);
+  }
+  50% {
+    opacity: 0.45;
+    transform: scale(1.15);
+  }
+}
+
+/* Label & Value */
+.tyr-ca-label {
+  font-weight: 500;
+  color: var(--text-muted);
+  letter-spacing: 0.04em;
+}
+
+.tyr-ca-value {
+  font-weight: 600;
+  color: var(--text);
+  letter-spacing: 0.02em;
+}
+
+.tyr-ca-badge.is-tba .tyr-ca-value {
+  color: var(--gold-400, #c9a24a);
+  letter-spacing: 0.08em;
+}
+
+.tyr-ca-network-tag {
+  display: inline-flex;
+  align-items: center;
+  font-size: 11px;
+  color: var(--text-muted);
+  opacity: 0.8;
+  padding-left: 2px;
+}
+
+.tyr-ca-network-tag::before {
+  content: "·";
+  margin-right: 8px;
+  opacity: 0.6;
+}
+
+/* Action Buttons */
+.tyr-ca-actions {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  margin-left: 2px;
+}
+
+.tyr-ca-btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 24px;
+  height: 24px;
+  border-radius: 6px;
+  background: rgba(255, 255, 255, 0.04);
+  border: 1px solid rgba(255, 255, 255, 0.08);
+  color: var(--text-muted);
+  cursor: pointer;
+  transition: all 0.15s ease;
+  padding: 0;
+  text-decoration: none;
+}
+
+.tyr-ca-btn:hover {
+  background: rgba(201, 162, 74, 0.12);
+  border-color: rgba(201, 162, 74, 0.4);
+  color: var(--gold-300, #eed79b);
+}
+
+.tyr-ca-btn.is-copied {
+  background: rgba(34, 197, 94, 0.15);
+  border-color: rgba(34, 197, 94, 0.5);
+  color: #4ade80;
+}
+
+/* Toast/Tooltip inside badge */
+.tyr-ca-tooltip {
+  position: absolute;
+  bottom: calc(100% + 8px);
+  left: 50%;
+  transform: translateX(-50%);
+  background: #18030e;
+  border: 1px solid var(--border-strong, #541934);
+  color: var(--text);
+  font-size: 11px;
+  line-height: 1.4;
+  padding: 6px 12px;
+  border-radius: 8px;
+  white-space: nowrap;
+  pointer-events: none;
+  z-index: 50;
+  box-shadow: 0 10px 25px -5px rgba(0, 0, 0, 0.6);
+  animation: tyr-fade-in 0.15s ease-out;
+}
+
+@keyframes tyr-fade-in {
+  from {
+    opacity: 0;
+    transform: translate(-50%, 4px);
+  }
+  to {
+    opacity: 1;
+    transform: translate(-50%, 0);
+  }
+}
+
+/* Hero Variant */
+.hero-ca-wrap {
+  display: flex;
+  justify-content: flex-start;
+  align-items: center;
+  margin-top: 24px;
+  margin-bottom: -16px;
+}
+
+/* Footer Variant */
+.foot-ca-section {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  margin-top: 18px;
+  margin-bottom: 6px;
+}
+
+.foot-ca-label {
+  font-size: 11px;
+  font-family: "JetBrains Mono", monospace;
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
+  color: var(--text-muted);
+  opacity: 0.85;
+}
+
+.foot-ca-section .tyr-ca-badge {
+  align-self: flex-start;
+  background: rgba(14, 0, 7, 0.8);
+}
+
+@media (max-width: 600px) {
+  .hero-ca-wrap {
+    justify-content: center;
+    width: 100%;
+  }
+
+  .tyr-ca-badge {
+    flex-wrap: wrap;
+    justify-content: center;
+    border-radius: 14px;
+    padding: 8px 14px;
+    gap: 8px;
+  }
+}

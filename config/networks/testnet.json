@@ -1,0 +1,140 @@
+{
+  "name": "testnet",
+  "label": "Robinhood Chain Testnet",
+  "chainId": 46630,
+  "rpcUrl": "https://rpc.testnet.chain.robinhood.com",
+  "rpcEnv": "NEXT_PUBLIC_TESTNET_RPC_URL",
+  "explorer": "https://explorer.testnet.chain.robinhood.com",
+  "startBlock": 143500969,
+  "verification": "pending",
+  "contracts": {
+    "StakeManager": "0x7c78cd94901f400432fc37fe5fe2b85a32a90861",
+    "UsdgVault": "0x969cc9b64405fdbb7c157c72dfbd0bf714b0e76b",
+    "FeeSplitter": "0xc48caf1424fcd61310448d87996e2f8ad280c473",
+    "BuybackBurner": "0x32445e552f14c3216f331a39e7dd50a11e021fe0",
+    "TreasuryRouter": "0x7557578f82b833ae77458a6e7bb7e659b5e91688",
+    "PortfolioVault": "0xa8039ac65c40da7deda84064fe788a9c8b8752e1",
+    "TyrTwapOracle": "0x330a226eff5a7dd9bd395a2d995b48e175ebb500"
+  },
+  "tokens": {
+    "USDG": {
+      "symbol": "USDG",
+      "address": "0xa1e6557c578c2422bee44069cdb82710a8906c62",
+      "decimals": 18
+    },
+    "TYR": {
+      "symbol": "TYR",
+      "address": "0xe0ee5fe8e29db7e20792bce6f9a8bc3c4bc95617",
+      "decimals": 18
+    },
+    "WETH": {
+      "symbol": "WETH",
+      "address": "0x97bae90aeda8cead58514cfc93e3ee9b9f4490e3",
+      "decimals": 18
+    }
+  },
+  "stocks": {
+    "AAPL": {
+      "symbol": "AAPL",
+      "name": "Apple",
+      "address": null,
+      "feed": null,
+      "oracle": null,
+      "vault": null,
+      "decimals": 18,
+      "enabled": false
+    },
+    "NVDA": {
+      "symbol": "NVDA",
+      "name": "NVIDIA",
+      "address": null,
+      "feed": null,
+      "oracle": null,
+      "vault": null,
+      "decimals": 18,
+      "enabled": false
+    },
+    "MSFT": {
+      "symbol": "MSFT",
+      "name": "Microsoft",
+      "address": null,
+      "feed": null,
+      "oracle": null,
+      "vault": null,
+      "decimals": 18,
+      "enabled": false
+    },
+    "GOOGL": {
+      "symbol": "GOOGL",
+      "name": "Alphabet",
+      "address": null,
+      "feed": null,
+      "oracle": null,
+      "vault": null,
+      "decimals": 18,
+      "enabled": false
+    },
+    "AMZN": {
+      "symbol": "AMZN",
+      "name": "Amazon",
+      "address": null,
+      "feed": null,
+      "oracle": null,
+      "vault": null,
+      "decimals": 18,
+      "enabled": false
+    },
+    "META": {
+      "symbol": "META",
+      "name": "Meta",
+      "address": null,
+      "feed": null,
+      "oracle": null,
+      "vault": null,
+      "decimals": 18,
+      "enabled": false
+    },
+    "TSLA": {
+      "symbol": "TSLA",
+      "name": "Tesla",
+      "address": "0x115fd21e78768cac1e1bd67bb69925cb57a5ac07",
+      "feed": "0xc32665a04d370b5230f0da17e78420ae2ff31857",
+      "oracle": "0x52f01351499c7d5d63e3aa157aace9dd7ffd1851",
+      "vault": "0x2e2f69b3c3dc26eae22447878bdc0bf05a200af0",
+      "decimals": 18,
+      "enabled": false
+    },
+    "AMD": {
+      "symbol": "AMD",
+      "name": "AMD",
+      "address": null,
+      "feed": null,
+      "oracle": null,
+      "vault": null,
+      "decimals": 18,
+      "enabled": false
+    }
+  },
+  "external": {
+    "treasurySafe": null,
+    "budget": null,
+    "reserve": null,
+    "timelock": null,
+    "guardian": null,
+    "dexRouter": null,
+    "morphoMarket": null,
+    "uniswapPool": "0x9d2eec989e50e58619376d7240f65f5a87532f78",
+    "ponsFeeWallet": null
+  },
+  "features": {
+    "stockTokens": false,
+    "morpho": false,
+    "ponsDirectClaim": false,
+    "geoGate": false
+  },
+  "deployment": {
+    "blockNumber": null,
+    "txHash": null,
+    "verifiedAt": null
+  }
+}

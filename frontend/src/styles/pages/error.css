@@ -1,0 +1,54 @@
+/* Page-specific styles ported from tyrian-site/404.html.
+   404 is a standalone layout: no global nav, footer, grain or cursor. */
+
+body:has(.page-error-shell) .nav,
+body:has(.page-error-shell) .mmenu,
+body:has(.page-error-shell) footer,
+body:has(.page-error-shell) .grain,
+body:has(.page-error-shell) .cursor,
+body:has(.page-error-shell) .cursor-dot {
+  display: none;
+}
+
+.page-error-shell {
+  display: flex;
+  flex-direction: column;
+  min-height: 100svh;
+  background: var(--bg);
+}
+
+.err-header {
+  padding: 18px clamp(16px, 4vw, 48px);
+}
+
+.page-error-shell .err-header .wordmark {
+  display: inline-flex;
+  font: 600 20px/1 Cinzel, serif;
+  letter-spacing: 0.14em;
+}
+
+.page-error .err-code {
+  font: 500 13px "JetBrains Mono", monospace;
+  letter-spacing: 0.18em;
+  color: var(--gold-500);
+}
+
+.page-error h1 span {
+  color: var(--gold-300);
+}
+
+[data-theme="light"] .page-error h1 span {
+  color: var(--tyr-600);
+}
+
+@keyframes turn {
+  to {
+    transform: rotate(360deg);
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .page-error .orn {
+    animation: none;
+  }
+}

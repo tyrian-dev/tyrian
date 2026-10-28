@@ -1,0 +1,54 @@
+/* Page-specific styles ported from tyrian-site/treasury.html.
+   Scoped to .page-treasury so they do not leak across routes. */
+
+.page-treasury .kpis{margin-top:28px;grid-template-columns:repeat(3,1fr)}
+@media (max-width:860px){
+.page-treasury .kpis{grid-template-columns:1fr 1fr}
+}
+@media (max-width:520px){
+.page-treasury .kpis{grid-template-columns:1fr}
+}
+.page-treasury .flowrow{display:grid;grid-template-columns:repeat(4,1fr);gap:12px}
+.page-treasury .flowrow div{position:relative;padding:18px;border:1px solid var(--border);border-radius:var(--radius);background:var(--surface)}
+.page-treasury .flowrow .pct{font:500 28px/1 "JetBrains Mono";color:var(--gold-500)}
+[data-theme="light"] .page-treasury .flowrow .pct{color:var(--tyr-600)}
+.page-treasury .flowrow p{font-size:13px;color:var(--text-muted);margin-top:8px}
+.page-treasury .bucket{display:grid;grid-template-columns:150px 1fr auto;gap:14px;align-items:center;padding:14px 0;border-top:1px solid var(--border)}
+.page-treasury .bucket:first-of-type{border-top:0}
+.page-treasury .bucket .bar{height:10px;border-radius:5px;background:var(--surface-2);overflow:hidden}
+.page-treasury .bucket .bar i{display:block;height:100%;border-radius:5px;transform-origin:left}
+.page-treasury .bucket b{font:500 15px "JetBrains Mono";font-weight:500}
+.page-treasury .bucket small{display:block;font-size:12px;color:var(--text-muted)}
+.page-treasury .calc{font:400 14px/1.9 "JetBrains Mono";color:var(--text-muted)}
+.page-treasury .calc b{color:var(--text);font-weight:500}
+.page-treasury .calc .res{color:var(--gold-500)}
+[data-theme="light"] .page-treasury .calc .res{color:var(--tyr-600)}
+.page-treasury .feed{list-style:none}
+.page-treasury .feed li{display:grid;grid-template-columns:auto 1fr auto;gap:12px;align-items:center;padding:12px 0;border-top:1px solid var(--border);font-size:14px}
+.page-treasury .feed li:first-child{border-top:0}
+.page-treasury .feed .ev{font:500 12px "JetBrains Mono"}
+.page-treasury .feed .amt{font:500 13px "JetBrains Mono";text-align:right}
+.page-treasury .feed small{display:block;color:var(--text-muted);font-size:12px}
+.page-treasury .contracts{display:grid;grid-template-columns:repeat(auto-fill,minmax(260px,1fr));gap:12px}
+.page-treasury .contracts div{padding:16px;border:1px solid var(--border);border-radius:var(--radius);background:var(--surface);display:flex;flex-direction:column;gap:8px}
+.page-treasury .contracts b{font:500 14px "JetBrains Mono"}
+.page-treasury .contracts p{font-size:13px;color:var(--text-muted);flex:1}
+@media (max-width:860px){
+.page-treasury .flowrow{grid-template-columns:1fr 1fr}
+.page-treasury .bucket{grid-template-columns:1fr auto}
+.page-treasury .bucket .bar{grid-column:1/-1;grid-row:2}
+}
+@media (max-width:720px){
+.page-treasury #pfTable thead{display:none}
+.page-treasury #pfTable tr{display:grid;grid-template-columns:1fr 1fr 1fr;gap:6px 12px;padding:14px 16px;border-bottom:1px solid var(--border)}
+.page-treasury #pfTable td{padding:0;border:0}
+.page-treasury #pfTable td.num{text-align:left}
+.page-treasury #pfTable td:first-child{grid-column:1/-1}
+.page-treasury #pfTable td[data-l]::before{content:attr(data-l);display:block;font:500 11px "JetBrains Mono";color:var(--text-muted);text-transform:uppercase;letter-spacing:.06em}
+}
+
+@media (max-width:520px){
+.page-treasury .flowrow{grid-template-columns:1fr}
+.page-treasury #pfTable tr{grid-template-columns:1fr 1fr;gap:6px 10px}
+.page-treasury .feed li{grid-template-columns:1fr auto}
+}

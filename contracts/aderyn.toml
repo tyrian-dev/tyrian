@@ -1,0 +1,22 @@
+# Aderyn configuration for the production contracts.
+#
+# Run it against the sanitized scope produced by
+# `scripts/static-analysis-scope.sh` (see docs/security/static-analysis.md):
+#
+#   bash scripts/static-analysis-scope.sh /tmp/tyrian-scope
+#   cp contracts/aderyn.toml /tmp/tyrian-scope/aderyn.toml
+#   cd /tmp/tyrian-scope && aderyn .
+version = 1
+
+root = "."
+
+# Mocks are test-only helpers and never deployed on mainnet.
+exclude = ["/mocks/"]
+
+[detectors]
+# Excluded with a written rationale in docs/security/static-analysis.md:
+# - contract-locks-ether: FeeSplitter.receive() wraps every wei into WETH
+#   immediately, so no ETH can stay locked.
+# - reentrancy-state-change: every value-moving entrypoint is nonReentrant; the
+#   remaining hits are constructors, views, and owner-only configuration.
+exclude = ["contract-locks-ether", "reentrancy-state-change"]

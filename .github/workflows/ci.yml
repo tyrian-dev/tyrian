@@ -1,0 +1,218 @@
+name: CI
+
+on:
+  push:
+    branches: [main, dev]
+  pull_request:
+
+permissions:
+  contents: read
+
+concurrency:
+  group: ci-${{ github.ref }}
+  cancel-in-progress: true
+
+env:
+  NEXT_TELEMETRY_DISABLED: "1"
+
+jobs:
+  static:
+    name: Typecheck, lint, manifest
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: oven-sh/setup-bun@v2
+        with:
+          bun-version: 1.3.14
+
+      - name: Install dependencies
+        run: bun install --frozen-lockfile
+
+      # next-env.d.ts is gitignored, so generate route types before tsc.
+      - name: Generate Next.js types
+        working-directory: frontend
+        run: bunx next typegen
+
+      - name: Typecheck
+        run: bun run typecheck
+
+      - name: Lint
+        run: bun run lint
+
+      - name: Manifest unit tests
+        run: bun run test:manifest
+
+      - name: Safety-critical coverage gate
+        run: bun run check:coverage
+
+      - name: Verify testnet manifest
+        run: bun run verify:manifest:testnet
+
+  backend:
+    name: Backend test suite
+    runs-on: ubuntu-latest
+    services:
+      postgres:
+        image: postgres:16-alpine
+        env:
+          POSTGRES_USER: postgres
+          POSTGRES_PASSWORD: password
+          POSTGRES_DB: tyrian
+        ports:
+          - 5432:5432
+        options: >-
+          --health-cmd pg_isready
+          --health-interval 10s
+          --health-timeout 5s
+          --health-retries 5
+      redis:
+        image: redis:7-alpine
+        ports:
+          - 6379:6379
+        options: >-
+          --health-cmd "redis-cli ping"
+          --health-interval 10s
+          --health-timeout 5s
+          --health-retries 5
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: oven-sh/setup-bun@v2
+        with:
+          bun-version: 1.3.14
+
+      - name: Install dependencies
+        run: bun install --frozen-lockfile
+
+      - name: Run Backend & Shared Tests
+        env:
+          DATABASE_URL: postgresql://postgres:password@localhost:5432/tyrian
+          REDIS_URL: redis://localhost:6379
+          TYRIAN_NETWORK: testnet
+        run: bun test shared/contracts/addresses.test.ts backend/test
+
+  contracts:
+    name: Contracts
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: foundry-rs/foundry-toolchain@v1
+        with:
+          version: 1.8.3
+
+      - uses: oven-sh/setup-bun@v2
+        with:
+          bun-version: 1.3.14
+
+      - name: Install dependencies
+        run: bun install --frozen-lockfile
+
+      - name: Check formatting
+        working-directory: contracts
+        run: forge fmt --check
+
+      - name: Run Foundry tests
+        working-directory: contracts
+        run: forge test -vv
+
+  coverage:
+    name: Contracts coverage
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      # Foundry 1.8.x `forge coverage` aborts on this repo (`solar` rejects the
+      # duplicate source units produced by libs = ["../node_modules",
+      # "node_modules"]). 1.3.6 still reports correctly; the unit-test job above
+      # stays on the newer toolchain.
+      - uses: foundry-rs/foundry-toolchain@v1
+        with:
+          version: 1.3.6
+
+      - uses: oven-sh/setup-bun@v2
+        with:
+          bun-version: 1.3.14
+
+      - name: Install dependencies
+        run: bun install --frozen-lockfile
+
+      - name: Coverage
+        working-directory: contracts
+        run: forge coverage --report summary --report lcov --report-file lcov.info --exclude-tests --ir-minimum
+
+      - name: Upload LCOV report
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: contracts-lcov
+          path: contracts/lcov.info
+          if-no-files-found: warn
+
+  security:
+    name: Contracts static analysis
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: foundry-rs/foundry-toolchain@v1
+        with:
+          version: 1.3.6
+
+      - uses: oven-sh/setup-bun@v2
+        with:
+          bun-version: 1.3.14
+
+      - name: Install dependencies
+        run: bun install --frozen-lockfile
+
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+
+      - name: Install Slither
+        run: |
+          pip install slither-analyzer==0.11.6 solc-select==1.0.3
+          solc-select install 0.8.26
+          solc-select use 0.8.26
+
+      - name: Slither
+        run: bash scripts/slither.sh
+
+      - name: Install Aderyn
+        run: |
+          curl -sSL -o /tmp/aderyn.tar.xz https://github.com/Cyfrin/aderyn/releases/download/aderyn-v0.6.8/aderyn-x86_64-unknown-linux-gnu.tar.xz
+          tar -xf /tmp/aderyn.tar.xz -C /tmp
+          sudo install -m 0755 /tmp/aderyn-x86_64-unknown-linux-gnu/aderyn /usr/local/bin/aderyn
+          aderyn --version
+
+      - name: Aderyn
+        run: bash scripts/aderyn.sh "$RUNNER_TEMP/aderyn-report.md"
+
+      - name: Upload Aderyn report
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: aderyn-report
+          path: ${{ runner.temp }}/aderyn-report.md
+          if-no-files-found: warn
+
+  build:
+    name: Build
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: oven-sh/setup-bun@v2
+        with:
+          bun-version: 1.3.14
+
+      - name: Install dependencies
+        run: bun install --frozen-lockfile
+
+      - name: Build frontend
+        run: bun run build
+
+      - name: Build backend
+        run: bun run build:backend

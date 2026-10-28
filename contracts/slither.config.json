@@ -1,0 +1,6 @@
+{
+  "filter_paths": "src/mocks/|test/|script/",
+  "exclude_dependencies": true,
+  "exclude_optimization": true,
+  "detectors_to_exclude": "incorrect-exp,reentrancy-balance"
+}

@@ -1,0 +1,39 @@
+/* Page-specific styles ported from tyrian-site/models.html.
+   Scoped to .page-models so they do not leak across routes. */
+
+.page-models .controls{display:grid;grid-template-columns:1fr auto auto;gap:12px;align-items:center;margin:32px 0 18px}
+.page-models .table-wrap{contain:paint}
+.page-models .controls .select{min-width:190px}
+.page-models .search{position:relative;min-width:0}
+.page-models .search svg{position:absolute;left:14px;top:50%;transform:translateY(-50%);color:var(--text-muted)}
+.page-models .search input{width:100%;padding-left:40px}
+.page-models .provs{display:flex;gap:8px;flex-wrap:wrap;margin-bottom:18px}
+.page-models .provs button{min-height:44px;padding:0 14px;border-radius:999px;border:1px solid var(--border);font-size:14px;color:var(--text-muted)}
+.page-models .provs button[aria-pressed="true"]{border-color:var(--gold-500);color:var(--text);background:rgba(201,162,74,.1)}
+.page-models .mname b{display:block;font-weight:500}
+.page-models .mid{display:flex;align-items:center;gap:6px;margin-top:2px}
+.page-models .mid code{font:400 12px "JetBrains Mono";color:var(--text-muted);overflow-wrap:anywhere}
+.page-models .mid button{min-width:52px;min-height:40px;font:500 11px "JetBrains Mono";color:var(--gold-500);border-radius:6px}
+.page-models .mid button:hover{background:var(--surface-2)}
+.page-models .try{white-space:nowrap}
+.page-models .note{font-size:13px;color:var(--text-muted);margin-top:16px}
+@media (max-width:860px){
+.page-models .controls{grid-template-columns:1fr 1fr}
+.page-models .controls .select{min-width:0}
+.page-models .controls .search{grid-column:1/-1}
+}
+@media (max-width:720px){
+.page-models #mTable thead{display:none}
+.page-models #mTable tr{display:grid;grid-template-columns:1fr 1fr 1fr;gap:8px 12px;padding:16px;border-bottom:1px solid var(--border)}
+.page-models #mTable td{padding:0;border:0}
+.page-models #mTable td.num{text-align:left}
+.page-models #mTable td.mname, .page-models #mTable td.act{grid-column:1/-1}
+.page-models #mTable td[data-l]::before{content:attr(data-l);display:block;font:500 11px "JetBrains Mono";color:var(--text-muted);text-transform:uppercase;letter-spacing:.06em}
+.page-models #mTable td.prov{display:none}
+}
+
+@media (max-width:520px){
+.page-models #mTable tr{grid-template-columns:1fr 1fr;gap:6px 10px}
+.page-models .controls{grid-template-columns:1fr}
+.page-models .provs button{min-height:38px;padding:0 10px;font-size:13px}
+}

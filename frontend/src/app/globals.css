@@ -1,0 +1,51 @@
+@import "../styles/tyrian-base.css";
+@import "../styles/wallet-onboarding.css";
+@import "../styles/ca-badge.css";
+@import "../styles/pages/home.css";
+@import "../styles/pages/stake.css";
+@import "../styles/pages/dashboard.css";
+@import "../styles/pages/playground.css";
+@import "../styles/pages/models.css";
+@import "../styles/pages/treasury.css";
+@import "../styles/pages/docs.css";
+@import "../styles/pages/error.css";
+
+/* Wallet session status in the account menu */
+.acct-menu .acct-status {
+  display: block;
+  margin-top: 6px;
+  font: 500 11px "JetBrains Mono";
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
+  color: var(--warning);
+}
+.acct-menu .acct-status.is-on {
+  color: var(--success);
+}
+.acct-menu .acct-error {
+  margin: 0;
+  padding: 8px 12px;
+  font-size: 12px;
+  line-height: 1.45;
+  color: var(--danger);
+  overflow-wrap: anywhere;
+}
+.acct-menu button:disabled {
+  opacity: 0.6;
+  cursor: wait;
+}
+
+/* Additional Next.js Web3 styles */
+.rk-custom-btn {
+  font-family: inherit !important;
+}
+
+/* Ensure RainbowKit modals match Tyrian Dark theme */
+[data-rk] {
+  --rk-colors-accentColor: var(--tyr-600) !important;
+  --rk-colors-accentColorForeground: var(--ivory) !important;
+  --rk-colors-modalBackground: var(--tyr-900) !important;
+  --rk-colors-modalBorder: var(--border-strong) !important;
+  --rk-colors-modalText: var(--ivory) !important;
+  --rk-colors-modalTextSecondary: var(--text-muted) !important;
+}

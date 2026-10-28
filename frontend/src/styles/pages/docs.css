@@ -1,0 +1,28 @@
+/* Page-specific styles ported from tyrian-site/docs.html.
+   Scoped to .page-docs so they do not leak across routes. */
+
+.page-docs .docs{display:grid;grid-template-columns:220px minmax(0,1fr);gap:48px;padding:40px 0 20px}
+.page-docs .toc{position:sticky;top:96px;align-self:start}
+.page-docs .toc p{font:500 11px "JetBrains Mono";letter-spacing:.1em;text-transform:uppercase;color:var(--text-muted);margin-bottom:10px}
+.page-docs .toc a{display:flex;align-items:center;min-height:40px;padding:0 12px;border-left:1px solid var(--border);font-size:14px;color:var(--text-muted)}
+.page-docs .toc a:hover{color:var(--text)}
+.page-docs .toc a.on{color:var(--text);border-left:2px solid var(--gold-500);padding-left:11px}
+.page-docs .doc section{padding:8px 0 48px;scroll-margin-top:96px}
+.page-docs .doc h2{margin-bottom:12px}
+.page-docs .doc h3{font-size:17px;margin:24px 0 8px}
+.page-docs .doc p, .page-docs .doc li{color:var(--text-muted);max-width:72ch}
+.page-docs .doc p+p{margin-top:12px}
+.page-docs .doc ol, .page-docs .doc ul{padding-left:20px;display:grid;gap:6px;margin:10px 0}
+.page-docs .doc strong{color:var(--text);font-weight:500}
+.page-docs .doc .code{margin:16px 0}
+.page-docs .doc .table-wrap{margin:16px 0}
+.page-docs .tabs{display:flex;gap:4px}
+.page-docs .tabs button{min-height:40px;min-width:48px;padding:0 12px;border-radius:8px;font:500 12px "JetBrains Mono";color:rgba(245,239,230,.6)}
+.page-docs .tabs button[aria-selected="true"]{background:rgba(234,182,208,.12);color:#F5EFE6}
+.page-docs .callout{padding:14px 16px;border-radius:12px;border-left:3px solid var(--gold-500);background:var(--surface);color:var(--text);font-size:14px;margin:16px 0;max-width:72ch}
+.page-docs .mtoc{display:none}
+@media (max-width:960px){
+.page-docs .docs{grid-template-columns:minmax(0,1fr);gap:16px}
+.page-docs .toc{display:none}
+.page-docs .mtoc{display:block;margin-top:24px}
+}

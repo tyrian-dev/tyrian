@@ -1,0 +1,22 @@
+{
+  "name": "@web3-starter/indexer",
+  "private": true,
+  "type": "module",
+  "scripts": {
+    "dev": "ponder dev -p 42069 --schema ponder",
+    "start": "bun scripts/prepare-db.ts && ponder start -p 42069 --schema ponder",
+    "check-db": "bun scripts/prepare-db.ts --check",
+    "reset-db": "bun scripts/prepare-db.ts --reset",
+    "fingerprint": "bun scripts/prepare-db.ts --print",
+    "test": "bun test scripts"
+  },
+  "dependencies": {
+    "@web3-starter/shared": "workspace:*",
+    "pg": "^8.16.3",
+    "ponder": "0.8.33",
+    "viem": "^2.56.9"
+  },
+  "devDependencies": {
+    "@types/pg": "^8.15.5"
+  }
+}

@@ -1,0 +1,36 @@
+{
+  "name": "@web3-starter/contracts",
+  "private": true,
+  "version": "0.0.1",
+  "description": "Foundry project for Tyrian protocol contracts",
+  "type": "module",
+  "scripts": {
+    "build": "forge build",
+    "test": "forge test",
+    "coverage": "forge coverage --report summary --exclude-tests --ir-minimum",
+    "slither": "bash ../scripts/slither.sh",
+    "aderyn": "bash ../scripts/aderyn.sh",
+    "deploy:local": "forge script script/DeployTyrian.s.sol:DeployTyrianScript --rpc-url http://127.0.0.1:8545 --broadcast",
+    "deploy:testnet": "forge script script/DeployTyrian.s.sol:DeployTyrianScript --rpc-url robinhood_testnet --broadcast",
+    "deploy:mocks": "forge script script/DeployMocks.s.sol:DeployMocksScript --rpc-url robinhood_testnet --broadcast",
+    "deploy:protocol": "forge script script/DeployProtocol.s.sol:DeployProtocolScript --rpc-url ${RPC_ALIAS} --broadcast",
+    "deploy:stock": "forge script script/DeployStockVault.s.sol:DeployStockVaultScript --rpc-url ${RPC_ALIAS} --broadcast",
+    "configure:protocol": "forge script script/ConfigureProtocol.s.sol:ConfigureProtocolScript --rpc-url ${RPC_ALIAS} --broadcast",
+    "configure:stock": "forge script script/ConfigureStockVault.s.sol:ConfigureStockVaultScript --rpc-url ${RPC_ALIAS} --broadcast",
+    "transfer:ownership": "forge script script/TransferOwnership.s.sol:TransferOwnershipScript --rpc-url ${RPC_ALIAS} --broadcast",
+    "verify:mainnet": "forge script script/VerifyMainnet.s.sol:VerifyMainnetScript --rpc-url robinhood_mainnet",
+    "hardhat:build": "hardhat build",
+    "hardhat:test": "hardhat test"
+  },
+  "devDependencies": {
+    "@nomicfoundation/hardhat-toolbox-viem": "^5.0.7",
+    "@types/node": "^24.6.0",
+    "forge-std": "github:foundry-rs/forge-std#v1.16.2",
+    "hardhat": "^3.18.0",
+    "typescript": "~6.0.3",
+    "viem": "^2.56.9"
+  },
+  "dependencies": {
+    "@openzeppelin/contracts": "^5.6.1"
+  }
+}

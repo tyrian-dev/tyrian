@@ -1,0 +1,35 @@
+# Dependencies
+node_modules/
+
+# Foundry Compilation Outputs & Cache
+out/
+cache/
+broadcast/
+.gas-snapshot
+snapshots/
+
+# Hardhat Build Artifacts (Legacy)
+artifacts/
+types/
+
+# Build & Dist
+dist/
+bundle/
+
+# Environment Files
+.env
+.env.*
+!.env.example
+
+# Test Coverage
+coverage/
+lcov.info
+
+# OS & Editor
+.DS_Store
+Thumbs.db
+.idea/
+.vscode/*
+!.vscode/extensions.json
+
+# NOTE: Do NOT ignore ignition/deployments/ if using hardhat ignition

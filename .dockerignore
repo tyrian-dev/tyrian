@@ -1,0 +1,17 @@
+node_modules
+*/node_modules
+.next
+*/.next
+dist
+*/dist
+.git
+.github
+contracts/broadcast
+contracts/cache
+contracts/out
+docs
+tyrian-site
+.env
+.env.local
+.env.*.local
+*.log

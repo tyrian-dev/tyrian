@@ -1,0 +1,93 @@
+# ==========================================
+# Tyrian Monorepo .gitignore
+# ==========================================
+
+# Dependencies
+node_modules/
+.pnp
+.pnp.js
+
+# Next.js Build Outputs & Cache
+.next/
+frontend/.next/
+out/
+frontend/out/
+
+# Foundry / Smart Contracts Build Outputs
+contracts/out/
+contracts/cache/
+contracts/broadcast/
+contracts/.gas-snapshot
+out/
+broadcast/
+.gas-snapshot
+
+# Hardhat Legacy Artifacts (if any)
+contracts/artifacts/
+contracts/types/
+
+# Ponder Indexer Cache & Generated Code
+.ponder/
+indexer/.ponder/
+indexer/generated/
+
+# General Build Outputs & Dist
+dist/
+build/
+output/
+frontend/dist/
+backend/dist/
+shared/dist/
+
+# TypeScript Build Info & Cache
+*.tsbuildinfo
+frontend/tsconfig.tsbuildinfo
+backend/tsconfig.tsbuildinfo
+.cache/
+.eslintcache
+
+# Environment & Keystores (Preserve .env.example)
+.env
+.env.*
+!.env.example
+*.local
+.keystore
+contracts/.keystore
+
+# Local Databases & Backups (SQLite / Ponder dev DB / Dump snapshots)
+*.sqlite
+*.sqlite3
+*.db
+*.db-journal
+*.db-wal
+backend/*.sqlite
+backend/*.db
+backups/
+*.dump.json
+*.meta.json
+
+# Logs
+logs/
+*.log
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+pnpm-debug.log*
+lerna-debug.log*
+
+# Test Coverage
+coverage/
+.nyc_output/
+
+# Deployment Caches
+.vercel/
+.wrangler/
+
+# OS & Editor Files
+.DS_Store
+Thumbs.db
+.idea/
+.vscode/*
+!.vscode/extensions.json
+*.swp
+*.swo

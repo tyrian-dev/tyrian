@@ -1,0 +1,24 @@
+# Dependencies
+node_modules/
+
+# Ponder Indexer Cache & Generated Code
+.ponder/
+generated/
+dist/
+
+# Environment Files
+.env
+.env.*
+!.env.example
+*.local
+
+# Logs
+logs/
+*.log
+
+# OS & Editor
+.DS_Store
+Thumbs.db
+.idea/
+.vscode/*
+!.vscode/extensions.json

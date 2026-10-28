@@ -1,0 +1,293 @@
+/* Tyrian wallet onboarding (RainbowKit remains the connector layer). */
+.wallet-onboarding .modal-backdrop {
+  backdrop-filter: blur(6px);
+}
+
+.wallet-modal-card {
+  width: min(560px, 100%);
+}
+
+.wallet-modal-card .modal-head {
+  align-items: flex-start;
+}
+
+.wallet-modal-card .modal-head h3 {
+  margin-top: 8px;
+  font-size: 22px;
+  line-height: 1.15;
+}
+
+.wallet-steps {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px 14px;
+  margin: 0 0 20px;
+  padding: 0;
+  list-style: none;
+}
+
+.wallet-step {
+  display: inline-flex;
+  align-items: center;
+  gap: 7px;
+  font: 500 11px/1 "JetBrains Mono", monospace;
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
+  color: var(--text-muted);
+}
+
+.wallet-step > span {
+  display: grid;
+  width: 22px;
+  height: 22px;
+  place-items: center;
+  border: 1px solid var(--border);
+  border-radius: 50%;
+  background: var(--surface-2);
+  color: var(--text-muted);
+  font-size: 10px;
+}
+
+.wallet-step.is-active {
+  color: var(--gold-500);
+}
+
+.wallet-step.is-active > span {
+  border-color: rgba(198, 148, 54, 0.55);
+  color: var(--gold-500);
+}
+
+.wallet-step.is-done {
+  color: var(--success);
+}
+
+.wallet-step.is-done > span {
+  border-color: rgba(46, 158, 107, 0.4);
+  color: var(--success);
+}
+
+.wallet-step-body {
+  display: flex;
+  flex-direction: column;
+  gap: 14px;
+}
+
+.wallet-step-body .hint {
+  margin: 0;
+  font-size: 13px;
+  line-height: 1.6;
+}
+
+.wallet-route {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) auto minmax(0, 1fr);
+  align-items: center;
+  gap: 12px;
+  padding: 14px;
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+  background: var(--surface-2);
+}
+
+.wallet-route > div {
+  display: flex;
+  min-width: 0;
+  flex-direction: column;
+  gap: 5px;
+}
+
+.wallet-route span:not(.wallet-route-arrow) {
+  font: 500 10px/1 "JetBrains Mono", monospace;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: var(--text-muted);
+}
+
+.wallet-route b {
+  overflow-wrap: anywhere;
+  font-size: 14px;
+  font-weight: 500;
+}
+
+.wallet-route-arrow {
+  color: var(--gold-500);
+  font-size: 18px;
+}
+
+.wallet-error {
+  margin: 0;
+  padding: 10px 12px;
+  border: 1px solid rgba(214, 69, 69, 0.35);
+  border-radius: 10px;
+  background: rgba(214, 69, 69, 0.08);
+  color: var(--danger);
+  font-size: 13px;
+  line-height: 1.5;
+  overflow-wrap: anywhere;
+}
+
+.wallet-note {
+  margin: 0;
+  padding: 10px 12px;
+  border: 1px solid rgba(198, 148, 54, 0.28);
+  border-radius: 10px;
+  background: rgba(198, 148, 54, 0.07);
+  color: var(--warning);
+  font-size: 12px;
+  line-height: 1.5;
+}
+
+.wallet-terms-list {
+  display: grid;
+  gap: 8px;
+  margin: 0;
+  padding-left: 20px;
+  color: var(--text-muted);
+  font-size: 13px;
+  line-height: 1.5;
+}
+
+.wallet-account {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding: 12px 14px;
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+  background: var(--surface-2);
+}
+
+.wallet-account-dot {
+  width: 9px;
+  height: 9px;
+  flex: 0 0 auto;
+  border-radius: 50%;
+  background: var(--success);
+  box-shadow: 0 0 0 4px rgba(46, 158, 107, 0.14);
+}
+
+.wallet-account > div {
+  display: flex;
+  min-width: 0;
+  flex: 1;
+  flex-direction: column;
+  gap: 3px;
+}
+
+.wallet-account span {
+  font: 500 10px/1 "JetBrains Mono", monospace;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: var(--text-muted);
+}
+
+.wallet-account b {
+  overflow-wrap: anywhere;
+  font-size: 14px;
+  font-weight: 500;
+}
+
+.wallet-success {
+  display: flex;
+  align-items: center;
+  gap: 14px;
+  padding: 14px;
+  border: 1px solid rgba(46, 158, 107, 0.35);
+  border-radius: var(--radius);
+  background: rgba(46, 158, 107, 0.08);
+}
+
+.wallet-success > span {
+  display: grid;
+  width: 38px;
+  height: 38px;
+  flex: 0 0 auto;
+  place-items: center;
+  border: 1px solid rgba(46, 158, 107, 0.45);
+  border-radius: 50%;
+  color: var(--success);
+  font-size: 18px;
+}
+
+.wallet-success b {
+  font-size: 15px;
+  font-weight: 500;
+}
+
+.wallet-success p {
+  margin: 4px 0 0;
+  color: var(--text-muted);
+  font-size: 12px;
+  overflow-wrap: anywhere;
+}
+
+.wallet-onboarding .modal-actions {
+  margin-top: 2px;
+}
+
+.wallet-switch-wallet {
+  align-self: flex-start;
+  padding: 2px 0;
+  border: 0;
+  background: none;
+  color: var(--text-muted);
+  font: inherit;
+  font-size: 12px;
+  text-align: left;
+  text-decoration: underline;
+  text-underline-offset: 3px;
+  cursor: pointer;
+}
+
+.wallet-switch-wallet:hover,
+.wallet-switch-wallet:focus-visible {
+  color: var(--text);
+}
+
+.wallet-done-actions .btn {
+  flex: 1;
+  justify-content: center;
+}
+
+@media (max-width: 520px) {
+  /* RainbowKit ships a 368px minimum-width card. At 320/390 px that pushes
+     the close control off-screen, so let the connector modal fill the
+     available viewport instead. */
+  [data-rk] [role="dialog"] [role="document"] > div,
+  [data-rk] [role="dialog"] [role="document"] > div > div {
+    width: 100% !important;
+    max-width: 100% !important;
+    min-width: 0 !important;
+  }
+
+  .wallet-modal-card {
+    padding: 20px;
+  }
+
+  .wallet-route {
+    grid-template-columns: 1fr;
+    gap: 10px;
+  }
+
+  .wallet-route-arrow {
+    transform: rotate(90deg);
+    justify-self: start;
+  }
+
+  .wallet-onboarding .modal-actions {
+    flex-direction: column-reverse;
+  }
+
+  .wallet-onboarding .modal-actions .btn {
+    width: 100%;
+    justify-content: center;
+  }
+
+  .wallet-steps {
+    gap: 7px 10px;
+  }
+
+  .wallet-step {
+    font-size: 10px;
+  }
+}

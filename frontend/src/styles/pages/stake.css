@@ -1,0 +1,40 @@
+/* Page-specific styles ported from tyrian-site/stake.html.
+   Scoped to .page-stake so they do not leak across routes. */
+
+.page-stake .summary{margin-top:28px}
+.page-stake .toolbar{display:flex;justify-content:space-between;align-items:center;gap:14px;flex-wrap:wrap;margin-bottom:18px}
+.page-stake .assets-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(270px,1fr));gap:16px}
+.page-stake .acard{position:relative;height:100%;background:var(--surface);border:1px solid var(--border);border-radius:var(--radius);padding:20px;display:flex;flex-direction:column;gap:14px;overflow:hidden}
+.page-stake .acard.boost{border-color:rgba(201,162,74,.45)}
+.page-stake .acard.base{background:color-mix(in srgb,var(--tyr-700) 55%,var(--surface))}
+[data-theme="light"] .page-stake .acard.base{background:var(--tyr-100)}
+.page-stake .acard .top{display:flex;justify-content:space-between;align-items:flex-start;gap:10px}
+.page-stake .acard .tk{font:600 26px/1 "Inter Tight";letter-spacing:-.01em}
+.page-stake .acard.boost .tk{color:var(--gold-500)}
+.page-stake .acard .nm{font-size:13px;color:var(--text-muted);margin-top:4px}
+.page-stake .acard .meta{display:flex;justify-content:space-between;font:400 12px/1.5 "JetBrains Mono";color:var(--text-muted);gap:10px}
+.page-stake .acard .meta b{color:var(--text);font-weight:500}
+.page-stake .acard form{display:flex;flex-direction:column;gap:10px;margin-top:auto}
+.page-stake .acard .inp{min-height:52px}
+.page-stake .acard .addr{font:400 11px "JetBrains Mono";color:var(--text-faint);overflow-wrap:anywhere}
+.page-stake .pos-actions{display:flex;gap:8px;justify-content:flex-end;flex-wrap:wrap}
+.page-stake .rules{display:grid;grid-template-columns:repeat(auto-fit,minmax(240px,1fr));gap:16px}
+.page-stake .rules div{padding:18px;border:1px solid var(--border);border-radius:var(--radius);background:var(--surface)}
+.page-stake .rules h3{font-size:16px;margin-bottom:6px}
+.page-stake .rules p{font-size:14px;color:var(--text-muted)}
+.page-stake #txModal .preview-note{font:400 12px "JetBrains Mono";color:var(--warning);margin-bottom:12px}
+@media (max-width:720px){
+.page-stake #posTable thead{display:none}
+.page-stake #posTable tr{display:grid;grid-template-columns:1fr 1fr;gap:6px 12px;padding:14px 16px;border-bottom:1px solid var(--border)}
+.page-stake #posTable td{padding:0;border:0}
+.page-stake #posTable td.num{text-align:left}
+.page-stake #posTable td[data-l]::before{content:attr(data-l);display:block;font:500 11px "JetBrains Mono";color:var(--text-muted);text-transform:uppercase;letter-spacing:.06em}
+.page-stake #posTable .pos-actions{grid-column:1/-1;justify-content:flex-start}
+}
+
+@media (max-width:480px){
+.page-stake .assets-grid{grid-template-columns:1fr}
+.page-stake #posTable tr{grid-template-columns:1fr;gap:8px}
+.page-stake #posTable .pos-actions{flex-direction:column}
+.page-stake #posTable .pos-actions .btn{width:100%;justify-content:center}
+}
