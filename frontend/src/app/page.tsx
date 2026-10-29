@@ -404,7 +404,7 @@ export default function HomePage() {
               </Link>
             </div>
             <div className="hero-ca-wrap reveal">
-              <CaBadge variant="hero" />
+              <CaBadge variant="hero" status="live" />
             </div>
             <div className="hero-meta reveal">
               <span>

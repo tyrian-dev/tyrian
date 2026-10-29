@@ -1,4 +1,5 @@
 import Link from "next/link";
+import Image from "next/image";
 import { CaBadge } from "@/components/ui/CaBadge";
 
 export function Footer() {
@@ -7,9 +8,13 @@ export function Footer() {
       <div className="wrap foot-grid">
         <div>
           <Link href="/" className="wordmark" aria-label="Tyrian home">
-            <svg className="mark" role="img" aria-label="Tyrian logo">
-              <use href="#mark" />
-            </svg>
+            <Image
+              src="/logo.png"
+              alt="Tyrian logo"
+              width={32}
+              height={32}
+              className="mark"
+            />
             TYRIAN
           </Link>
           <p style={{ marginTop: "12px" }}>
@@ -21,7 +26,7 @@ export function Footer() {
           </p>
           <div className="foot-ca-section">
             <span className="foot-ca-label">Official Token Contract</span>
-            <CaBadge variant="footer" />
+            <CaBadge variant="footer" status="live" />
           </div>
           <div className="foot-row">
             <a

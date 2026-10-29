@@ -1,13 +1,18 @@
 import Link from "next/link";
+import Image from "next/image";
 
 export default function NotFound() {
   return (
     <div className="page-error-shell">
       <header className="err-header">
         <Link className="wordmark" href="/" aria-label="Tyrian home">
-          <svg className="mark" role="img" aria-label="Tyrian logo">
-            <use href="#mark" />
-          </svg>
+          <Image
+            src="/logo.png"
+            alt="Tyrian logo"
+            width={32}
+            height={32}
+            className="mark"
+          />
           TYRIAN
         </Link>
       </header>

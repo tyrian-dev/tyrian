@@ -1,7 +1,7 @@
 "use client";
 
 import { useState, useEffect, useCallback } from "react";
-import { activeNetwork, activeNetworkName, isAddress } from "@shared/contracts/addresses";
+import { activeNetwork, isAddress, networkManifests } from "@shared/contracts/addresses";
 
 export interface CaBadgeProps {
   variant?: "hero" | "footer" | "compact";
@@ -16,22 +16,25 @@ export function CaBadge({
   className = "",
   showNetwork = true,
 }: CaBadgeProps) {
-  // Address from network manifest
-  const rawAddress = activeNetwork.tokens.TYR?.address ?? null;
-  const explorerUrl = activeNetwork.explorer || "https://explorer.testnet.chain.robinhood.com";
-  const networkLabel = activeNetwork.name === "mainnet" ? "Robinhood Chain" : "Robinhood Chain";
+  // Address from network manifest; fallback to mainnet manifest address if available
+  const canonicalMainnetAddress = networkManifests.mainnet.tokens.TYR?.address ?? null;
+  const rawAddress = (activeNetwork.name === "mainnet"
+    ? activeNetwork.tokens.TYR?.address
+    : canonicalMainnetAddress) ?? activeNetwork.tokens.TYR?.address ?? null;
+
+  const explorerUrl =
+    (activeNetwork.name === "mainnet" ? activeNetwork.explorer : networkManifests.mainnet.explorer) ||
+    "https://robinhoodchain.blockscout.com";
+  const networkLabel = "Robinhood Chain";
 
   // Determine initial TBA state deterministically for SSR hydration safety
   const defaultIsTba = (() => {
     if (status === "tba") return true;
     if (status === "live") return false;
-    // For "auto": if mainnet and no address -> TBA.
-    // If NEXT_PUBLIC_TYR_CA_STATUS is set to "live" and address exists -> live.
-    if (process.env.NEXT_PUBLIC_TYR_CA_STATUS === "live" && isAddress(rawAddress)) {
-      return false;
-    }
-    // Default to TBA as requested for pre-launch public presentation
-    return true;
+    if (process.env.NEXT_PUBLIC_TYR_CA_STATUS === "tba") return true;
+    if (process.env.NEXT_PUBLIC_TYR_CA_STATUS === "live") return false;
+    // For "auto": if a valid token address is configured in manifest -> live, otherwise TBA
+    return !isAddress(rawAddress);
   })();
 
   const [isTba, setIsTba] = useState<boolean>(defaultIsTba);
@@ -44,7 +47,7 @@ export function CaBadge({
     try {
       const params = new URLSearchParams(window.location.search);
       const queryCa = params.get("ca");
-      if (queryCa === "live" && (rawAddress || activeNetwork.tokens.USDG?.address)) {
+      if (queryCa === "live" && rawAddress) {
         setIsTba(false);
       } else if (queryCa === "tba") {
         setIsTba(true);
@@ -54,7 +57,7 @@ export function CaBadge({
     }
   }, [rawAddress]);
 
-  const activeAddress = rawAddress || "0xe0ee5fe8e29db7e20792bce6f9a8bc3c4bc95617";
+  const activeAddress = rawAddress || "0xe7a401dc74196ed5aeb96f24f7ac5c02e1b793d7";
   const displayAddress = `${activeAddress.slice(0, 6)}…${activeAddress.slice(-4)}`;
 
   const handleCopy = useCallback(async () => {

@@ -1,6 +1,7 @@
 "use client";
 
 import Link from "next/link";
+import Image from "next/image";
 import { usePathname } from "next/navigation";
 import { useState, useEffect, useRef, type MouseEvent as ReactMouseEvent } from "react";
 import { ConnectButton } from "@rainbow-me/rainbowkit";
@@ -177,9 +178,14 @@ export function Navbar() {
       <nav className={`nav ${scrolled ? "scrolled" : ""}`} id="nav" aria-label="Main">
         <div className="wrap">
           <Link href="/" className="wordmark" aria-label="Tyrian home">
-            <svg className="mark" role="img" aria-label="Tyrian logo">
-              <use href="#mark" />
-            </svg>
+            <Image
+              src="/logo.png"
+              alt="Tyrian logo"
+              width={32}
+              height={32}
+              className="mark"
+              priority
+            />
             TYRIAN
           </Link>
 

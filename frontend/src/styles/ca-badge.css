@@ -6,10 +6,10 @@
   display: inline-flex;
   align-items: center;
   gap: 10px;
-  background: rgba(18, 0, 9, 0.7);
+  background: rgba(26, 1, 24, 0.75);
   border: 1px solid var(--border);
-  border-radius: 999px;
-  padding: 6px 14px 6px 12px;
+  border-radius: 12px;
+  padding: 8px 14px 8px 12px;
   font-family: "JetBrains Mono", monospace;
   font-size: 12px;
   line-height: 1.2;
@@ -23,9 +23,9 @@
 }
 
 .tyr-ca-badge:hover {
-  border-color: rgba(201, 162, 74, 0.35);
-  background: rgba(28, 4, 16, 0.85);
-  box-shadow: 0 6px 20px rgba(102, 2, 60, 0.2);
+  border-color: rgba(201, 162, 74, 0.4);
+  background: rgba(38, 3, 22, 0.85);
+  box-shadow: 0 6px 20px rgba(102, 2, 60, 0.25);
 }
 
 /* Status Indicator Dot */
@@ -199,7 +199,7 @@
   .tyr-ca-badge {
     flex-wrap: wrap;
     justify-content: center;
-    border-radius: 14px;
+    border-radius: 12px;
     padding: 8px 14px;
     gap: 8px;
   }

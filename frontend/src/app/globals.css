@@ -10,6 +10,13 @@
 @import "../styles/pages/docs.css";
 @import "../styles/pages/error.css";
 
+/* Logo mark styling for raster and vector marks */
+.wordmark .mark {
+  border-radius: 7px;
+  overflow: hidden;
+  object-fit: cover;
+}
+
 /* Wallet session status in the account menu */
 .acct-menu .acct-status {
   display: block;
