@@ -34,7 +34,10 @@ const TyrianSessionContext = createContext<TyrianSessionContextValue | null>(nul
 async function readApiError(response: Response): Promise<string> {
   try {
     const body = await response.json();
-    const message = body?.error || body?.message || body?.details;
+    const message =
+      (typeof body?.error === "object" ? body?.error?.message : body?.error) ||
+      body?.message ||
+      body?.details;
     if (typeof message === "string" && message.trim()) return message;
   } catch {}
   return `Request failed (HTTP ${response.status}).`;

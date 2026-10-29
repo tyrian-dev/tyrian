@@ -39,6 +39,18 @@ export function getSiweDomain(): string | null {
   return process.env.SIWE_DOMAIN?.trim() || null;
 }
 
+export function getSiweDomains(): string[] {
+  const raw = process.env.SIWE_DOMAIN?.trim();
+  if (!raw) return [];
+  return raw.split(",").map((d) => d.trim()).filter(Boolean);
+}
+
+export function isAllowedSiweDomain(domain: string): boolean {
+  const domains = getSiweDomains();
+  if (domains.length === 0) return true;
+  return domains.some((d) => domain === d || domain.endsWith(`.${d}`));
+}
+
 /**
  * SIWE chain allowlist comes from the selected manifest, not from env. A
  * signature for the other network is rejected.

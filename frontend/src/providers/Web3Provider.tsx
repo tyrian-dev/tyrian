@@ -5,6 +5,7 @@ import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import { WagmiProvider } from "wagmi";
 import { RainbowKitProvider, darkTheme, lightTheme } from "@rainbow-me/rainbowkit";
 import { config } from "@/config/wagmi";
+import { TARGET_CHAIN } from "@/lib/wallet/targetChain";
 import { TyrianSessionProvider } from "@/providers/TyrianSessionProvider";
 import { WalletOnboardingProvider } from "@/providers/WalletOnboardingProvider";
 import "@rainbow-me/rainbowkit/styles.css";
@@ -63,7 +64,7 @@ export function Web3Provider({ children }: { children: React.ReactNode }) {
   return (
     <WagmiProvider config={config}>
       <QueryClientProvider client={queryClient}>
-        <RainbowKitProvider theme={rainbowTheme}>
+        <RainbowKitProvider theme={rainbowTheme} initialChain={TARGET_CHAIN}>
           <TyrianSessionProvider>
             <WalletOnboardingProvider>{children}</WalletOnboardingProvider>
           </TyrianSessionProvider>

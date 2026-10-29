@@ -15,7 +15,7 @@ const app = new Hono();
 
 const allowedOrigins = (process.env.FRONTEND_URL ?? "*")
   .split(",")
-  .map((origin) => origin.trim())
+  .map((origin) => origin.trim().replace(/\/+$/, ""))
   .filter(Boolean);
 
 const credentials = allowedOrigins[0] !== "*";

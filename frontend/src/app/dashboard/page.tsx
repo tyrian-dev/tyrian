@@ -665,7 +665,7 @@ export default function DashboardPage() {
                   </>
                 ) : isStaker ? (
                   <>
-                    <b>Live testnet quota active.</b> Daily inference quota is synced with your on-chain stake on {activeNetwork.label}.
+                    <b>Live quota active.</b> Daily inference quota is synced with your on-chain stake on {activeNetwork.label}.
                   </>
                 ) : (
                   <>

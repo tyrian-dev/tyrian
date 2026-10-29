@@ -31,13 +31,29 @@ export async function csrfProtection(c: Context, next: Next) {
     const parsed = new URL(checkUrl);
     const host = parsed.host; // e.g. "localhost:3000", "localhost:3001"
 
+    const frontendHosts = (process.env.FRONTEND_URL ?? "")
+      .split(",")
+      .map((u) => {
+        try {
+          return new URL(u.trim()).host;
+        } catch {
+          return u.trim();
+        }
+      })
+      .filter(Boolean);
+
+    const siweHosts = (process.env.SIWE_DOMAIN ?? "")
+      .split(",")
+      .map((d) => d.trim())
+      .filter(Boolean);
+
     const allowedHosts = [
       "localhost:3000",
       "localhost:3001",
       "127.0.0.1:3000",
       "127.0.0.1:3001",
-      ...(process.env.FRONTEND_URL ? [new URL(process.env.FRONTEND_URL).host] : []),
-      ...(process.env.SIWE_DOMAIN ? [process.env.SIWE_DOMAIN] : []),
+      ...frontendHosts,
+      ...siweHosts,
     ];
 
     const isAllowed = allowedHosts.some((h) => host === h || host.endsWith(`.${h}`));

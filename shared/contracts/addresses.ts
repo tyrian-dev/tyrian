@@ -122,15 +122,13 @@ export function getNetworkManifest(network: NetworkName | string | number): Netw
   return networkManifests[resolveNetworkName(network)];
 }
 
-const env =
-  typeof process === "undefined"
-    ? undefined
-    : process.env;
-
 export function getActiveNetworkName(): NetworkName {
-  return resolveNetworkName(
-    env?.NEXT_PUBLIC_NETWORK ?? env?.TYRIAN_NETWORK ?? env?.APP_ENV,
-  );
+  const candidate =
+    (typeof process !== "undefined" ? process.env.NEXT_PUBLIC_NETWORK : undefined) ||
+    (typeof process !== "undefined"
+      ? process.env.TYRIAN_NETWORK || process.env.APP_ENV
+      : undefined);
+  return resolveNetworkName(candidate);
 }
 
 export const activeNetworkName: NetworkName = getActiveNetworkName();

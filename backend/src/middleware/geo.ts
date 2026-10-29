@@ -31,6 +31,12 @@ export function extractCountry(c: Context): string | null {
   const customCountry = c.req.header("x-country-code");
   if (customCountry) return customCountry.trim().toUpperCase();
 
+  const forwardedCountry = c.req.header("x-forwarded-country");
+  if (forwardedCountry) return forwardedCountry.trim().toUpperCase();
+
+  const geoCountry = c.req.header("x-geo-country");
+  if (geoCountry) return geoCountry.trim().toUpperCase();
+
   return null;
 }
 

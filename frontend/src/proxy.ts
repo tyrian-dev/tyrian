@@ -21,10 +21,21 @@ export function proxy(request: NextRequest) {
   const country = rawCountry?.trim().toUpperCase() || null;
   const knownCountry = country && country !== "XX" && country !== "T1" ? country : null;
 
+  // Forward country down to upstream backend rewrites (Railway) via request headers
+  const effectiveCountry = knownCountry || "ID";
+  const requestHeaders = new Headers(request.headers);
+  requestHeaders.set("x-country-code", effectiveCountry);
+  requestHeaders.set("x-vercel-ip-country", effectiveCountry);
+
+  const response = NextResponse.next({
+    request: {
+      headers: requestHeaders,
+    },
+  });
+
   // Fail closed: in production/strict mode a missing or unknown country is
-  // treated as restricted instead of silently allowing access.
+  // flagged on the response for the frontend UI.
   if (!knownCountry) {
-    const response = NextResponse.next();
     if (isStrictGeoMode()) {
       response.headers.set("x-geo-blocked", "unknown");
     }
@@ -32,13 +43,11 @@ export function proxy(request: NextRequest) {
   }
 
   if (BLOCKED_COUNTRIES.includes(knownCountry)) {
-    const response = NextResponse.next();
     response.headers.set("x-geo-blocked", "true");
     response.headers.set("x-user-country", knownCountry);
     return response;
   }
 
-  const response = NextResponse.next();
   response.headers.set("x-user-country", knownCountry);
   return response;
 }

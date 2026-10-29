@@ -5,8 +5,13 @@ const nextConfig = {
     let rawBackendUrl = (process.env.BACKEND_INTERNAL_URL || "http://localhost:3001").trim();
     // Strip surrounding quotes if accidentally included
     rawBackendUrl = rawBackendUrl.replace(/^['"]|['"]$/g, "");
-    // If protocol is missing (e.g. pasted directly from Railway as domain.up.railway.app), auto-prepend https://
-    if (rawBackendUrl && !rawBackendUrl.startsWith("http://") && !rawBackendUrl.startsWith("https://")) {
+    // Enforce https:// for any remote host (e.g. *.up.railway.app) to prevent 301 redirects that break POST requests
+    if (rawBackendUrl && !rawBackendUrl.includes("localhost") && !rawBackendUrl.includes("127.0.0.1")) {
+      rawBackendUrl = rawBackendUrl.replace(/^http:\/\//i, "https://");
+      if (!rawBackendUrl.startsWith("https://")) {
+        rawBackendUrl = `https://${rawBackendUrl}`;
+      }
+    } else if (rawBackendUrl && !rawBackendUrl.startsWith("http://") && !rawBackendUrl.startsWith("https://")) {
       rawBackendUrl = `https://${rawBackendUrl}`;
     }
     const backendUrl = rawBackendUrl.replace(/\/+$/, "");

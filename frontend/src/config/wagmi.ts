@@ -7,7 +7,7 @@ import {
 } from "@rainbow-me/rainbowkit/wallets";
 import { defineChain } from "viem";
 import { mainnet, sepolia } from "viem/chains";
-import { getNetworkManifest } from "@shared/contracts/addresses";
+import { activeNetwork, getNetworkManifest } from "@shared/contracts/addresses";
 
 const testnetManifest = getNetworkManifest("testnet");
 const mainnetManifest = getNetworkManifest("mainnet");
@@ -77,6 +77,10 @@ const wallets: WalletList = [
   },
 ];
 
+const isMainnet = activeNetwork.name === "mainnet";
+const primaryChain = isMainnet ? robinhoodMainnet : robinhoodTestnet;
+const secondaryChain = isMainnet ? robinhoodTestnet : robinhoodMainnet;
+
 export const config = getDefaultConfig({
   appName: "Tyrian",
   projectId: PROJECT_ID,
@@ -85,6 +89,6 @@ export const config = getDefaultConfig({
   // RainbowKit would force a network switch during wallet connection; if the
   // wallet (for example Phantom with an inactive network) cannot switch, the
   // connect request can hang before Tyrian's onboarding modal is even shown.
-  chains: [robinhoodTestnet, robinhoodMainnet, mainnet, sepolia],
+  chains: [primaryChain, secondaryChain, mainnet, sepolia],
   ssr: true,
 });

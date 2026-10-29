@@ -1,127 +1,441 @@
-# Tyrian ($TYR)
+<div align="center">
+  <img src="assets/logo.png" alt="Tyrian Logo" width="120" />
+  <h1>Tyrian ($TYR)</h1>
+  <p><strong>Stake liquid capital, access frontier AI intelligence, pay zero per-request inference fees.</strong></p>
+  <p>Settled on Robinhood Chain (EVM Mainnet 4663)</p>
 
-Tyrian adalah protokol staking dan AI inference quota di Robinhood Chain.
-Monorepo ini berisi kontrak, frontend, backend, indexer, dan shared config yang
-dipakai bersama.
+  <p>
+    <a href="#7-verification--testing"><img src="https://img.shields.io/badge/Typecheck-Passing-brightgreen.svg" alt="Typecheck"></a>
+    <a href="#7-verification--testing"><img src="https://img.shields.io/badge/Foundry-338%20Passed-blue.svg" alt="Foundry"></a>
+    <a href="https://robinhoodchain.blockscout.com"><img src="https://img.shields.io/badge/Robinhood%20Chain-Mainnet%204663-66023C.svg" alt="Robinhood Chain"></a>
+    <a href="LICENSE"><img src="https://img.shields.io/badge/License-MIT-yellow.svg" alt="License"></a>
+  </p>
 
-## Tech Stack
+  <p>
+    <a href="https://www.tyriancore.tech"><strong>Web App</strong></a> •
+    <a href="https://tyrian-roan.vercel.app"><strong>Edge Mirror</strong></a> •
+    <a href="https://backend-production-d22f.up.railway.app"><strong>Gateway API</strong></a> •
+    <a href="https://www.tyriancore.tech/health"><strong>Health Check</strong></a> •
+    <a href="https://www.tyriancore.tech/metrics"><strong>Telemetry</strong></a> •
+    <a href="https://www.tyriancore.tech/ops"><strong>Operations</strong></a> •
+    <a href="https://robinhoodchain.blockscout.com"><strong>Block Explorer</strong></a>
+  </p>
+</div>
 
-- **Contracts**: Foundry, Solidity `^0.8.26`, OpenZeppelin
-- **Frontend**: Next.js, React, TypeScript, wagmi/viem, RainbowKit
-- **Backend**: Hono, Drizzle ORM, Bun, PostgreSQL, Redis
-- **Indexer**: Ponder + Postgres
-- **Shared**: network manifest, loader alamat, ABI auto-sync
-- **Package Manager**: Bun workspaces
+---
 
-## Struktur Monorepo
+> [!IMPORTANT]
+> **Current Mainnet Status (Guarded Pre-Beta):**  
+> Core smart contracts are deployed and configured on **Robinhood Chain Mainnet (Chain ID `4663`, block `100195664`)**, with their state publicly verifiable onchain. Two-step ownership handover to the 48-hour Timelock Controller has been initiated onchain. The Next.js 16 web application and Hono AI Gateway are deployed live on Vercel and Railway with edge geo-header forwarding and multi-domain SIWE enabled.  
+> **Pending Release Gates:** Final Timelock `acceptOwnership()` execution, contract source code verification on Blockscout, the `$TYR` TWAP oracle, and an **independent third-party security audit** remain pending. This repository represents a **guarded pre-Beta release**, not a finalized public protocol.
+
+---
+
+## Table of Contents
+
+- [1. Overview & Core Concept](#1-overview--core-concept)
+- [2. System Architecture & Data Flow](#2-system-architecture--data-flow)
+- [3. Feature Matrix & Production Status](#3-feature-matrix--production-status)
+- [4. Live Mainnet Contract Registry](#4-live-mainnet-contract-registry)
+  - [Robinhood Chain Mainnet — Chain ID 4663](#robinhood-chain-mainnet--chain-id-4663)
+  - [Access Control & Governance State](#access-control--governance-state)
+  - [Testnet Rehearsal Registry — Chain ID 46630](#testnet-rehearsal-registry--chain-id-46630)
+- [5. Monorepo Structure](#5-monorepo-structure)
+- [6. Local Development & Setup](#6-local-development--setup)
+  - [Prerequisites](#prerequisites)
+  - [Installation & Environment](#1-installation)
+  - [Running Local Services](#3-running-local-development-services)
+- [7. Verification & Testing](#7-verification--testing)
+  - [Automated Test Suites](#automated-test-suites)
+  - [Read-Only Onchain Verification](#read-only-onchain-verification)
+- [8. Security, Governance & Risk Controls](#8-security-governance--risk-controls)
+- [9. References & Technical Guidelines](#9-references--technical-guidelines)
+- [10. License](#10-license)
+
+---
+
+## 1. Overview & Core Concept
+
+**Tyrian** takes its name from *Tyrian purple* — the rare dye harvested from Mediterranean mollusks and reserved exclusively for Roman emperors. Its founding premise: **"Once only for emperors."**
+
+Tyrian is an **AI compute gateway on Robinhood Chain built on a novel economic primitive: stake liquid capital, access frontier AI models, and pay zero per-request inference fees.**
+
+### The Problem
+
+- **Compounding inference costs:** AI power users, developers, and autonomous agents pay per token, facing unpredictable bills and cost spikes that scale directly with usage volume.
+- **Idle capital:** Stablecoins and tokenized assets sit idle in wallets while compute subscriptions drain liquid operational cash.
+- **Opaque rate limits:** Conventional AI platforms impose opaque, centrally altered usage limits with no verifiable mathematical backing.
+- **Opaque treasury accounting:** Users have no transparency into whether AI service costs are sustained by legitimate yield, token inflation, or venture subsidization.
+- **Principal risk in DeFi yields:** Traditional "yield-bearing AI" schemes often put principal capital at risk through leveraged trading or recursive lending.
+
+### The Tyrian Solution
+
+Unlike conventional AI tools that meter billing per-token or lock users into rigid monthly SaaS tiers:
+- Users stake liquid assets (Paxos USDG stablecoins, and in future phases tokenized equities) into principal-protected staking vaults.
+- Real yield generated by staked capital, paired with protocol creator fees from the `$TYR` token, funds an operational inference credit pool with AI providers (OpenRouter / frontier model clusters).
+- Daily compute quotas (in USD terms) are distributed **pro-rata** each midnight UTC to stakers based on their relative capital share, with staking `$TYR` unlocking a daily quota booster of up to **1.5x**.
+- Users interact via the web playground or issue authenticated requests with API keys (`tyr_live_...`). Model costs are deducted atomically from their daily quota without any fiat or per-call charges.
+
+The protocol operates on two strictly decoupled planes:
+1. **Onchain Plane (Capital Custody & Settlement):** Capital flows through immutable smart contracts: stake deposits → dedicated vaults → harvested yield above principal → treasury routing, and creator fees → fee splitter → permanent buyback and burn.
+2. **Offchain Plane (Telemetry, Indexing & Inference Gateway):** The Ponder indexer streams onchain contract events → daily automated epoch cron jobs calculate pro-rata quota weights from verified yields → the Hono AI gateway decrements per-wallet quotas atomically per inference call.
+
+---
+
+## 2. System Architecture & Data Flow
 
 ```text
-contracts/        Foundry: src, test, script deploy/configure/verify
-frontend/         Next.js: UI produk kanonis
-backend/          Hono API: auth, keys, gateway, quota, treasury
-indexer/          Ponder: event handler dan read model
-shared/           Loader manifest, ABI, tipe bersama
-config/networks/  testnet.json dan mainnet.json (satu-satunya sumber alamat)
-docs/             Plan, runbook, referensi, QA
-tyrian-site/      Template UI/referensi; bukan produk
+[User Wallet]
+     │
+     ▼
+1. Authentication & Session Establishment
+   SIWE nonce → EIP-4361 wallet signature → revocable session cookie (Redis)
+   Edge Proxy injects x-country-code → GeoGate verifies non-restricted jurisdiction
+     │
+     ▼
+2. Capital Staking
+   USDG approval → StakeManager.stake(USDG, amount)
+   → UsdgVault takes custody of assets (StakeManager tracks user shares only)
+   → Staked shares recorded, eligible for quota allocation at next epoch (00:00 UTC)
+     │
+     ├── Optional: Stake $TYR → boosts daily quota allocation (up to 1.5x multiplier)
+     │
+     ▼
+3. Ponder Indexer Streaming
+   Ingests: Staked / UnstakeRequested / Withdrawn / Harvested / FeesSplit / Burned
+   → PostgreSQL read model updated (positions, balances, burn logs, flow reconciliations)
+     │
+     ▼
+4. Daily Epoch Reconciliation (00:00 UTC)
+   Verified yield × 0.9 → Global Daily Compute Budget
+   → 60% Base Asset Pool + 40% Stock Token Pool
+   → Pro-rata weight per wallet (with TYR boost) → User Daily Quota (USD)
+     │
+     ▼
+5. AI Gateway Inference
+   Client API key `tyr_live_...` or Web Playground → POST /v1/chat/completions
+   → Atomic quota reservation (Redis Lua script) → OpenRouter dispatch → settle actual cost
+   → Release remaining reserved margin
+     │
+     ├── Quota exhausted → HTTP 402/429 (fail-closed, no free overdrafts)
+     └── Global budget threshold guard → halts execution if daily cap reached
+     │
+     ▼
+6. Capital Exit (Unstake & Withdraw)
+   requestUnstake → quota revoked immediately, unlockAt = now + 7 days
+   → Cooldown elapses → withdraw() → principal transferred back to user wallet
+   *(Withdrawals are never gated by protocol pause mechanisms)*
+     │
+     ▼
+7. Fee Flywheel & Treasury Allocation
+   Creator fee (WETH / TYR) → FeeSplitter.splitFees()
+     ├── WETH: 80% Treasury Safe, 20% BuybackBurner
+     └── TYR: 100% burned permanently to 0x000...dEaD
+   Treasury routing → TreasuryRouter.routeFunds()
+     ├── 70% Budget (Safe) → replenishes provider inference balances
+     ├── 20% Reserve (Timelock) → long-term reserve capital
+     └── 10% Portfolio (PortfolioVault) → weekly DCA accumulator
+     │
+     ▼
+8. Application Surfaces
+   / (Landing) · /dashboard · /stake · /models · /playground · /treasury · /ops · /docs
 ```
 
-## Prinsip Network
+### Daily Quota Calculation
 
-- Satu kode untuk testnet dan mainnet.
-- Pindah network hanya lewat `config/networks/*.json`, env selector, dan secrets.
-- Alamat kontrak **tidak** disimpan di `.env` atau komponen.
-- `mainnet.json` harus berisi alamat terverifikasi, `startBlock`, dan
-  `verification: "verified"` sebelum produksi.
-- `assertMainnetReady()` gagal tertutup selama manifest belum lengkap.
+$$\text{Global Daily Budget} = \text{Verified Yield} \times 0.9$$
+$$\text{Base Pool Budget} = \text{Global Daily Budget} \times 0.6$$
+$$\text{Stock Pool Budget} = \text{Global Daily Budget} \times 0.4$$
+$$\text{User Quota}_i = \sum_{a} \left[ \text{Budget}_a \times \frac{w_{i,a}}{\sum_{j} w_{j,a}} \right]$$
 
-Pilih network:
+Where:
+- $w_{i,a} = \text{USD value of wallet } i\text{'s stake in asset } a \times \text{Boost}_i$
+- $\text{Boost}_i = 1 + 0.5 \times \min\left(1, \frac{\text{Value of TYR staked}}{\text{Value of Base assets staked}}\right) \quad [\text{capped at } 1.5\text{x}]$
 
-```dotenv
-NEXT_PUBLIC_NETWORK=testnet
-TYRIAN_NETWORK=testnet
-INDEXER_NETWORK=testnet
+*Practical Example:* A USDG vault harvests $300 in yield over 24 hours → Daily budget is $270. User Alice stakes 1,000 USDG out of a total 100,000 USDG pool with no `$TYR` stake. Alice receives $270 \times 1\% = \mathbf{\$2.70/\text{day}}$ in AI compute credits, reset daily at 00:00 UTC.
+
+---
+
+## 3. Feature Matrix & Production Status
+
+The table below reflects the **actual operational state** of all protocol features. Features planned for future releases or currently disabled are flagged explicitly.
+
+| Feature Area | Component | Implementation Status | Live Production Status | Notes / Flags |
+|---|---|---|---|---|
+| **Staking** | USDG Vault Staking | Complete | **LIVE (Canary)** | Principal-protected `UsdgVault` active on Mainnet. |
+| **Staking** | Stock Tokens (Equities) | Implemented | ⚠️ **FLAGGED / INACTIVE** | 8 tickers (`AAPL`, `NVDA`, `TSLA`, etc.) are `enabled: false`. Phase 2 release. |
+| **Staking** | Staking Quota Boost ($TYR) | Implemented | ⚠️ **FLAGGED / INACTIVE** | Requires live `TyrTwapOracle`; currently dormant. |
+| **Staking** | Capital Withdrawal | Complete | **LIVE** | 7-day cooldown (`604800`s). Unpaused even during emergency pause. |
+| **AI Gateway** | OpenAI-Compatible API | Complete | **LIVE** | `POST /v1/chat/completions` (streaming & standard), `GET /v1/models`. |
+| **AI Gateway** | API Key Lifecycle | Complete | **LIVE** | `tyr_live_...` generated, SHA-256 hashed at rest, instant revocation. |
+| **AI Gateway** | Web Chat Playground | Complete | **LIVE** | Interactive interface with system prompts and model selection. |
+| **AI Gateway** | OpenRouter Upstream | Complete | **LIVE** | Upstream provider connection verified on live backend. |
+| **AI Gateway** | Multi-Model Routing | Complete | **LIVE** | Frontier models allowlisted with transparent per-token cost accounting. |
+| **Accounting** | Principal Protection | Complete | **LIVE** | `harvest()` moves yield above principal only; deposits block on loss. |
+| **Accounting** | Pro-Rata Quota Engine | Complete | **LIVE** | Atomic Redis Lua reservations (`reserve` → `settle` → `release`). |
+| **Flywheel** | WETH Fee Splitting | Complete | **LIVE** | 80% Treasury Safe / 20% BuybackBurner. |
+| **Flywheel** | TYR Fee Permanent Burn | Complete | **LIVE** | 100% burned onchain to Dead address (`0x...dEaD`). |
+| **Flywheel** | BuybackBurner Execution | Complete | **LIVE** | SwapRouter02 configured; awaiting live fee accumulation. |
+| **Treasury** | 70/20/10 Fund Routing | Complete | **LIVE** | 70% Safe / 20% Timelock / 10% PortfolioVault. |
+| **Treasury** | Portfolio DCA Accumulator | Complete | **LIVE** | Weekly DCA window, 100 bps slippage limit. |
+| **Oracles** | $TYR TWAP Oracle | Implemented | ⚠️ **FLAGGED / PENDING** | Mainnet oracle address is `null`. Awaiting Uniswap V3 graduation. |
+| **DeFi** | Morpho Vault Integration | Implemented | ⚠️ **FLAGGED / DISABLED** | Feature flag `features.morpho: false`. Phase 2 release. |
+| **DeFi** | Pons Direct Fee Claim | Implemented | ⚠️ **FLAGGED / DISABLED** | Feature flag `features.ponsDirectClaim: false`. Phase 2 release. |
+| **Security** | SIWE Authentication | Complete | **LIVE** | EIP-4361 authentication across primary and secondary domains. |
+| **Security** | Edge Geolocation Guard | Complete | **LIVE** | `proxy.ts` injects `x-country-code` to satisfy backend `geoGate`. |
+| **Security** | 48h Timelock Governance | Initiated | ⚠️ **FLAGGED / PENDING** | Ownership handover initiated; pending Safe `acceptOwnership()`. |
+| **Audit** | External Security Audit | In Progress | ⚠️ **FLAGGED / PENDING** | **No external audit completed.** Internal QA only. |
+
+---
+
+## 4. Live Mainnet Contract Registry
+
+### Robinhood Chain Mainnet — Chain ID `4663`
+
+All contracts are deployed on Robinhood Chain Mainnet (Arbitrum Orbit L2) using Paxos USDG as canonical currency.
+
+| Contract | Address | Deployment Tx | Block | Status |
+|---|---|---|---|---|
+| **StakeManager** | [`0x385eb43a7ffad276931c34826909c07f2e13c076`](https://robinhoodchain.blockscout.com/address/0x385eb43a7ffad276931c34826909c07f2e13c076) | `0x256ecd70bc9fea48...` | `100195664` | Active; `paused = false`; USDG enabled; 7d cooldown |
+| **UsdgVault** | [`0x9b3ed1fe94a2e6fffad9cf5212c30e29ab88284c`](https://robinhoodchain.blockscout.com/address/0x9b3ed1fe94a2e6fffad9cf5212c30e29ab88284c) | `0xc282e3b2e3bc01b4...` | `100195664` | Active; `paused = false`; USDG custody; zero loss |
+| **FeeSplitter** | [`0x1f5ccf2e9c0e41284dd4784868ea45aea2f7274a`](https://robinhoodchain.blockscout.com/address/0x1f5ccf2e9c0e41284dd4784868ea45aea2f7274a) | `0x71d3b66d6a50640c...` | `100195664` | Active; wired to Safe (80%) and BuybackBurner (20%) |
+| **BuybackBurner** | [`0xd2b3f99b8e9d3ebba404ed1178a8103976b8b70b`](https://robinhoodchain.blockscout.com/address/0xd2b3f99b8e9d3ebba404ed1178a8103976b8b70b) | `0xf53b5f939e6a928b...` | `100195664` | Active; Uniswap V3 router configured; totalBurned = 0 |
+| **TreasuryRouter** | [`0xc168a738e2f7384a71d3e12e3058d8575deafd05`](https://robinhoodchain.blockscout.com/address/0xc168a738e2f7384a71d3e12e3058d8575deafd05) | `0x9fbc7862daecb2f9...` | `100196207` | Active; 70% Safe / 20% Timelock / 10% PortfolioVault |
+| **PortfolioVault** | [`0xbf3d5a111bd82e44efe244793f1b0784a00b24f0`](https://robinhoodchain.blockscout.com/address/0xbf3d5a111bd82e44efe244793f1b0784a00b24f0) | `0x30dcf8ab6d91f46a...` | `100196207` | Active; 7d DCA window; 100 bps max slippage |
+| **TimelockController**| [`0xF186099CEa81E01A3Bd71a92b830b8bEB50d9E00`](https://robinhoodchain.blockscout.com/address/0xF186099CEa81E01A3Bd71a92b830b8bEB50d9E00) | `0x75d1b333796d8339...` | `99650424` | Active; 48h min delay; proposer/executor = Safe |
+| **Treasury Safe** | [`0x56e335892745ed42228525BF74da8755924Ad740`](https://robinhoodchain.blockscout.com/address/0x56e335892745ed42228525BF74da8755924Ad740) | Safe Factory | — | Active; Gnosis Safe 1.5.0; 2-of-3 threshold |
+| **USDG Token** | [`0x5fc5360D0400a0Fd4f2af552ADD042D716F1d168`](https://robinhoodchain.blockscout.com/address/0x5fc5360D0400a0Fd4f2af552ADD042D716F1d168) | Canonical Paxos | — | Canonical 6-decimal stablecoin |
+| **TYR Token** | [`0xe7a401dc74196ed5aeb96f24f7ac5c02e1b793d7`](https://robinhoodchain.blockscout.com/address/0xe7a401dc74196ed5aeb96f24f7ac5c02e1b793d7) | Pons Launchpad | — | Official 18-decimal token; 1B fixed supply |
+| **WETH Token** | [`0x0Bd7D308f8E1639FAb988df18A8011f41EAcAD73`](https://robinhoodchain.blockscout.com/address/0x0Bd7D308f8E1639FAb988df18A8011f41EAcAD73) | Canonical L2 WETH | — | 18-decimal wrapped Ether |
+| **DEX Router** | [`0xcaf681a66d020601342297493863e78c959e5cb2`](https://robinhoodchain.blockscout.com/address/0xcaf681a66d020601342297493863e78c959e5cb2) | Uniswap V3 | — | SwapRouter02 / Universal Router |
+| **TyrTwapOracle** | `null` | — | — | Awaiting Uniswap V3 liquidity pool graduation |
+
+### Access Control & Governance State
+
+- **Deployer EOA:** `0x911Bf0fd05A53eC2d06952Ee2Fca8b17CBeA3Bad` (Deployer is not a protocol owner).
+- **Two-Step Ownership Handover Transactions:**
+  - `StakeManager`: `0x37aba1708a6ec89dd52b00fac872f9bb74be5b48b132fd71b6f4c3db04470df2` (Block `100211306`)
+  - `UsdgVault`: `0x71f132dd842945ff84e2c58ac718be594a3f53765bb47fa714400d0e49d074a7` (Block `100211326`)
+  - `FeeSplitter`: `0x643f1bf199a9e66e7dea58c2e8a3fd5ccd8ed06ba98c9ea16e4d7a0a141d435e` (Block `100211347`)
+  - `BuybackBurner`: `0x3c7f3ccc9533c4022777706497d85519f8609682c1a53572a1277bb2aee5336b` (Block `100211367`)
+  - `TreasuryRouter`: `0x211709c0a7f48a813be8e6daca069182cbdf68d6bde1d9f37a0dfca43eb06238` (Block `100211385`)
+  - `PortfolioVault`: `0xc19207a44755b2458bfcc3143c5990341a400de8f6f05f32021dc00101de8b3d` (Block `100211406`)
+- `pendingOwner()` on all 6 contracts returns the Timelock address `0xF186099CEa81E01A3Bd71a92b830b8bEB50d9E00`. Final governance transfers permanently once the Safe executes `acceptOwnership()`.
+
+### Testnet Rehearsal Registry — Chain ID `46630`
+
+| Contract / Asset | Address | Notes |
+|---|---|---|
+| StakeManager | `0x7c78cd94901f400432fc37fe5fe2b85a32a90861` | Testnet rehearsal deployment |
+| UsdgVault | `0x969cc9b64405fdbb7c157c72dfbd0bf714b0e76b` | Testnet USDG vault |
+| FeeSplitter | `0xc48caf1424fcd61310448d87996e2f8ad280c473` | Fee routing verified |
+| BuybackBurner | `0x32445e552f14c3216f331a39e7dd50a11e021fe0` | Burn mechanism verified |
+| TreasuryRouter | `0x7557578f82b833ae77458a6e7bb7e659b5e91688` | Routing verified |
+| PortfolioVault | `0xa8039ac65c40da7deda84064fe788a9c8b8752e1` | Basket accumulation tested |
+| TyrTwapOracle | `0x330a226eff5a7dd9bd395a2d995b48e175ebb500` | Mock TWAP pool verified (rehearsal only) |
+
+---
+
+## 5. Monorepo Structure
+
+```text
+tyrian/
+├── assets/                  Project brand assets (logo, badges)
+├── contracts/               Foundry smart contract workspace
+│   ├── src/                 Core protocol contracts (StakeManager, UsdgVault, FeeSplitter, etc.)
+│   ├── test/                Unit, fuzz, and invariant test suites (342 total tests)
+│   ├── script/              Deterministic deployment, configuration, and verification scripts
+│   └── foundry.toml         Compiler profiles and EVM target settings
+├── frontend/                Next.js 16 (App Router + Turbopack) web application
+│   ├── src/app/             Routes: /, /dashboard, /stake, /models, /playground, /treasury, /ops, /docs
+│   ├── src/components/      UI components, Web3 connection modals, charts, quota gauges
+│   ├── src/config/          Wagmi and RainbowKit chain configurations
+│   └── src/proxy.ts         Next.js Edge Proxy injecting geolocation headers to upstream rewrites
+├── backend/                 Hono API gateway and AI compute routing service
+│   ├── src/routes/          /api/auth (SIWE), /api/keys, /v1/chat/completions, /api/epoch, /api/treasury
+│   ├── src/middleware/      Fail-closed geo-gate, CSRF origin validator, sliding-window rate limiters
+│   └── src/services/        Atomic Redis Lua quota engine, PostgreSQL Drizzle ORM, OpenRouter client
+├── indexer/                 Ponder event streaming service
+│   ├── ponder.config.ts     Contract bindings and network RPC definitions
+│   └── src/                 Event handlers tracking staking, harvests, fee splits, and burns
+├── shared/                  Shared contract addresses, ABI synchronization, and TypeScript types
+│   ├── contracts/abis/      Foundry-exported ABIs auto-synced across packages
+│   └── contracts/addresses.ts Type-safe manifest loaders with inlined client network resolution
+├── config/networks/         Single source of truth for contract addresses
+│   ├── mainnet.json         Robinhood Chain Mainnet (4663) manifest
+│   └── testnet.json         Robinhood Chain Testnet (46630) manifest
+└── package.json             Bun workspace orchestration scripts
 ```
 
-## Memulai
+---
 
-### 1. Instalasi
+## 6. Local Development & Setup
+
+### Prerequisites
+
+- [Bun](https://bun.sh) `1.2+` (Primary JavaScript runtime and package manager)
+- [Foundry](https://book.getfoundry.sh) `1.8+` (`forge`, `cast` for smart contracts)
+- [PostgreSQL](https://www.postgresql.org) `16+` (Relational database for backend and indexer)
+- [Redis](https://redis.io) `7+` (In-memory store for rate limiting, quotas, and sessions)
+
+### 1. Installation
+
+Clone the repository and install workspace dependencies:
 
 ```bash
+git clone https://github.com/tyrian-dev/tyrian.git
+cd tyrian
 bun install
+```
+
+### 2. Environment Configuration
+
+Copy the example environment file and configure local credentials:
+
+```bash
 cp .env.example .env
 ```
 
-Isi hanya secret dan override RPC di `.env`. Alamat kontrak tetap di manifest.
+Key environment selectors:
 
-### 2. Kontrak
+```dotenv
+# Target Network (mainnet or testnet)
+NEXT_PUBLIC_NETWORK=testnet
+TYRIAN_NETWORK=testnet
+INDEXER_NETWORK=testnet
+
+# Services Local Ports
+PORT=3001
+FRONTEND_URL=http://localhost:3000
+SIWE_DOMAIN=localhost:3000
+
+# Persistence & AI Keys
+DATABASE_URL=postgresql://postgres:postgres@localhost:5432/tyrian
+REDIS_URL=redis://localhost:6379
+OPENROUTER_API_KEY=sk-or-v1-...
+```
+
+> [!NOTE]
+> Contract addresses are **never** stored in `.env`. Contract addresses are resolved strictly through `config/networks/testnet.json` and `config/networks/mainnet.json`.
+
+### 3. Smart Contracts Build & Test
 
 ```bash
+# Compile contracts with Foundry
 bun run contracts:build
+
+# Run all contract test suites
 bun run contracts:test
-bun run sync                 # regenerate ABI ke shared/contracts/abis
+
+# Auto-sync ABIs to shared workspace
+bun run sync
 ```
 
-Detail deploy dan guard mainnet ada di [`contracts/README.md`](./contracts/README.md)
-dan [`AGENT.md`](./AGENT.md).
+### 4. Running Local Development Services
 
-### 3. Frontend
+Start each service in a separate terminal:
 
 ```bash
+# Terminal 1: Frontend (Next.js - http://localhost:3000)
 bun run dev:frontend
-```
 
-Buka `http://localhost:3000`.
-
-### 4. Backend
-
-```bash
+# Terminal 2: Backend Gateway (Hono - http://localhost:3001)
 bun run dev:backend
-```
 
-Health check: `http://localhost:3000/health`.
-
-### 5. Indexer
-
-Indexer membutuhkan Postgres dan manifest yang sudah berisi alamat serta
-`startBlock`.
-
-```bash
+# Terminal 3: Indexer (Ponder)
 bun run dev:indexer
 ```
 
-## Skrip
+Verify backend health:
 
-| Perintah | Deskripsi |
-|---|---|
-| `bun run dev:frontend` | Dev server Next.js |
-| `bun run dev:backend` | Dev server Hono |
-| `bun run dev:indexer` | Dev server Ponder |
-| `bun run build` | Build production frontend |
-| `bun run build:backend` | Bundle backend |
-| `bun run typecheck` | Typecheck frontend, backend, dan config indexer |
-| `bun run lint` | Lint frontend |
-| `bun run verify:manifest` | Validasi manifest network aktif |
-| `bun run verify:manifest:testnet` | Validasi struktur manifest testnet |
-| `bun run verify:manifest:mainnet` | Gate readiness mainnet; gagal selama manifest belum lengkap |
-| `bun run test:manifest` | Test guard manifest dan config network backend |
-| `bun run contracts:build` | `forge build` |
-| `bun run contracts:test` | `forge test` |
-| `bun run sync` | Sinkronisasi ABI Foundry ke shared |
+```bash
+curl http://localhost:3001/health
+```
 
-## Dokumentasi
+---
 
-- [`AGENT.md`](./AGENT.md) — aturan kerja, network manifest, Definition of Done.
-- [`docs/reference/developer-brief.md`](./docs/reference/developer-brief.md) —
-  brief produk; tidak boleh diubah tanpa keputusan eksplisit.
-- [`docs/plans/`](./docs/plans/) — plan per domain dan status task.
-- [`shared/README.md`](./shared/README.md) — loader manifest dan ABI.
+## 7. Verification & Testing
 
-## Keamanan
+Tyrian maintains strict test coverage and type-safety across all packages.
 
-- Jangan commit `.env`, private key, atau secret.
-- Gunakan wallet burner dan RPC privat untuk deploy.
-- Mainnet tidak boleh memakai mock, alamat zero, EOA treasury/guardian, atau
-  private key default Anvil.
-- Jangan mengklaim audit, legal, atau compliance sebelum bukti tersedia.
-- Mode `live` tidak boleh menampilkan data preview.
+### Automated Test Suites
+
+```bash
+# Run monorepo typecheck across frontend, backend, and indexer
+bun run typecheck
+
+# Run backend auth and session security suite
+bun test backend/test/auth.test.ts
+
+# Run all backend unit and integration tests
+bun run test:backend
+
+# Validate network manifest configuration and address integrity
+bun run verify:manifest
+bun run verify:manifest:mainnet
+
+# Run smart contract unit, fuzz, and invariant tests
+bun run contracts:test
+
+# Run live Robinhood Testnet fork tests
+bun run contracts:test:fork
+```
+
+### Read-Only Onchain Verification
+
+Anyone can verify the live deployment on Robinhood Chain Mainnet (`4663`) using standard `cast` commands without private keys:
+
+```bash
+RPC=https://rpc.mainnet.chain.robinhood.com
+
+# 1. Verify Chain ID (4663)
+cast chain-id --rpc-url $RPC
+
+# 2. Verify StakeManager & UsdgVault Active Status
+cast call 0x385eb43a7ffad276931c34826909c07f2e13c076 "paused()(bool)" --rpc-url $RPC
+cast call 0x385eb43a7ffad276931c34826909c07f2e13c076 "cooldownDuration()(uint256)" --rpc-url $RPC
+cast call 0x9b3ed1fe94a2e6fffad9cf5212c30e29ab88284c "totalAssets()(uint256)" --rpc-url $RPC
+cast call 0x9b3ed1fe94a2e6fffad9cf5212c30e29ab88284c "totalPrincipal()(uint256)" --rpc-url $RPC
+
+# 3. Verify Ownership Handover State (PendingOwner is Timelock)
+cast call 0x385eb43a7ffad276931c34826909c07f2e13c076 "owner()(address)" --rpc-url $RPC
+cast call 0x385eb43a7ffad276931c34826909c07f2e13c076 "pendingOwner()(address)" --rpc-url $RPC
+
+# 4. Verify 48-Hour Timelock Delay (172,800 seconds)
+cast call 0xF186099CEa81E01A3Bd71a92b830b8bEB50d9E00 "getMinDelay()(uint256)" --rpc-url $RPC
+
+# 5. Verify Treasury Split & Burn Parameters
+cast call 0xc168a738e2f7384a71d3e12e3058d8575deafd05 "budgetBps()(uint256)" --rpc-url $RPC
+cast call 0xc168a738e2f7384a71d3e12e3058d8575deafd05 "reserveBps()(uint256)" --rpc-url $RPC
+cast call 0xd2b3f99b8e9d3ebba404ed1178a8103976b8b70b "totalBurned()(uint256)" --rpc-url $RPC
+```
+
+---
+
+## 8. Security, Governance & Risk Controls
+
+1. **Custody Isolated from Accounting:** Vaults custody assets; `StakeManager` strictly handles share records and cooldown queues. No admin function can transfer user funds, and no `rescueTokens()` backdoor exists for user assets.
+2. **Principal Protection Guarantees:** `harvest()` only extracts yield exceeding `totalPrincipal`. Strategy losses are shared pro-rata with no bailouts. Unrecovered losses automatically freeze new deposits to protect incoming capital.
+3. **Unstoppable Capital Exits:** Pausing only suspends deposits and yield harvests. `requestUnstake()` and `withdraw()` remain permanently unpaused.
+4. **Anti-Flash-Stake Epochs:** Newly staked assets become active in the subsequent daily epoch. Unstaking immediately revokes compute quotas.
+5. **Verifiable Burn Flywheel:** WETH fee allocations (80/20) and `$TYR` burns (100%) emit onchain `Burned(token, amount, source)` events (`source = FEE | BUYBACK`). Burns rely on no off-chain or optimistic claims.
+6. **Multi-Tiered Governance:** 2-of-3 Gnosis Safe coupled with a 48-hour TimelockController. Public execution on the timelock is disabled.
+7. **Fail-Closed Backend Infrastructure:** The backend terminates boot if network parameters do not match mainnet manifests, if public RPC endpoints are passed, or if required secrets are unpopulated.
+8. **Atomic Quota Execution:** Quota reservations, deductions, and releases run via atomic Redis Lua scripts to eliminate race conditions and double-spending.
+9. **Hashed API Credentials:** Client API keys are SHA-256 hashed at rest; only prefixes are retrievable. User sessions are tracked in PostgreSQL and revocable instantly in Redis.
+10. **Edge-to-Server Geo-Compliance:** Geo-restrictions are enforced in backend middleware (`/api/auth/verify`, `/v1/chat/completions`) using country headers injected by Next.js Edge proxy (`x-country-code`).
+11. **External Audit Disclosure:** **No external third-party smart contract audit has been completed.** Internal test packages and rehearsals do not constitute an independent audit.
+12. **Treasury Valuation Disclosure:** Off-chain dashboard treasury estimations temporarily reference fixed asset valuations (`WETH 2500`, `TYR 0.0004`, `TSLA 440`) until real-time pricing feeds are integrated (`REL-B-07` / `AUD-KI-09`).
+
+---
+
+## 9. References & Technical Guidelines
+
+- [`contracts/README.md`](contracts/README.md) — Smart contract testing, deployment guards, and verification guide.
+- [`shared/README.md`](shared/README.md) — Network manifest loader and ABI synchronization details.
+
+---
+
+## 10. License
+
+This project is licensed under the [MIT License](LICENSE).

@@ -9,7 +9,10 @@ import {
   readSession,
   revokeAllUserSessions,
 } from "../services/session";
-import { getSiweDomain, isAllowedSiweChainId } from "../config/network";
+import {
+  isAllowedSiweChainId,
+  isAllowedSiweDomain,
+} from "../config/network";
 import { csrfProtection, rateLimiter } from "../middleware/security";
 import { geoGate, extractCountry } from "../middleware/geo";
 import { dbService } from "../services/db";
@@ -74,7 +77,10 @@ authRouter.post(
         return c.json({ error: "Signed address does not match." }, 401);
       }
 
-      const expectedDomain = getSiweDomain();
+      if (!isAllowedSiweDomain(parsed.domain)) {
+        return c.json({ error: "SIWE domain not allowed." }, 401);
+      }
+
       const now = new Date();
 
       if (!isAllowedSiweChainId(parsed.chainId)) {
@@ -90,7 +96,7 @@ authRouter.post(
         message: parsed,
         nonce: parsed.nonce,
         address: parsed.address,
-        ...(expectedDomain ? { domain: expectedDomain } : {}),
+        domain: parsed.domain,
         time: now,
       });
 
