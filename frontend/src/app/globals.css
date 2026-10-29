@@ -56,3 +56,101 @@
   --rk-colors-modalText: var(--ivory) !important;
   --rk-colors-modalTextSecondary: var(--text-muted) !important;
 }
+
+/* Telemetry Spec Box — Modern Institutional Web3 UI */
+.telemetry-box {
+  display: inline-flex;
+  align-items: stretch;
+  background: rgba(234, 182, 208, 0.04);
+  border: 1px solid var(--border);
+  border-radius: 10px;
+  overflow: hidden;
+}
+.telemetry-item {
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  padding: 6px 14px;
+  border-right: 1px solid var(--border);
+  gap: 2px;
+}
+.telemetry-item:last-child {
+  border-right: none;
+}
+.telemetry-label {
+  font: 500 10px/1.2 "JetBrains Mono", monospace;
+  text-transform: uppercase;
+  letter-spacing: 0.07em;
+  color: var(--text-muted);
+}
+.telemetry-value {
+  font: 500 12.5px/1.2 "JetBrains Mono", monospace;
+  color: var(--text);
+  white-space: nowrap;
+}
+.telemetry-value.gold {
+  color: var(--gold-400);
+}
+.telemetry-value.success {
+  color: var(--success);
+}
+@media (max-width: 640px) {
+  .telemetry-box {
+    flex-wrap: wrap;
+    width: 100%;
+  }
+  .telemetry-item {
+    flex: 1 1 auto;
+    padding: 6px 10px;
+  }
+}
+
+/* Friendly Action Prompt Strip (Replaces generic warning banners) */
+.prompt-strip {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 16px;
+  padding: 14px 18px;
+  border-radius: 12px;
+  border: 1px solid var(--border);
+  background: rgba(234, 182, 208, 0.03);
+  font-size: 13.5px;
+  color: var(--text);
+  margin-bottom: 24px;
+}
+.prompt-strip .prompt-content {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  flex: 1;
+}
+.prompt-strip .prompt-ico {
+  flex-shrink: 0;
+  color: var(--accent);
+}
+.prompt-strip .prompt-cta {
+  flex-shrink: 0;
+}
+@media (max-width: 720px) {
+  .prompt-strip {
+    flex-direction: column;
+    align-items: flex-start;
+  }
+}
+
+/* Institutional Rectangular Micro-Tags & Badges (replaces generic 999px pills) */
+.chip {
+  border-radius: 6px !important;
+  padding: 4px 8px !important;
+  font: 500 11.5px/1.2 "JetBrains Mono", monospace !important;
+  letter-spacing: 0.02em;
+}
+.chip-sm {
+  padding: 3px 6px !important;
+  border-radius: 4px !important;
+  font-size: 10.5px !important;
+}
+.chip i {
+  display: none !important; /* Eliminate circular dots from badges */
+}

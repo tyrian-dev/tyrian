@@ -234,19 +234,20 @@ export default function ModelsPage() {
             </p>
           </div>
           <div className="aside">
-            <span className={`chip ${loading || source === "live" ? "chip-ok" : source === "cache" ? "chip-warn" : "chip-err"}`}>
-              <i />
-              {loading
-                ? "Loading catalog"
-                : source === "live"
-                  ? "Live from Gateway"
-                  : source === "cache"
-                    ? "Cached catalog"
-                    : "Catalog unavailable"}
-            </span>
-            <span className="chip" id="countChip">
-              {loading ? "Loading…" : `${allModels.length} models`}
-            </span>
+            <div className="telemetry-box" role="status" aria-label="Catalog telemetry">
+              <div className="telemetry-item">
+                <span className="telemetry-label">Catalog Source</span>
+                <span className={`telemetry-value ${source === "live" ? "success" : "gold"}`}>
+                  {loading ? "Loading…" : source === "live" ? "Live Gateway" : source === "cache" ? "Cached" : "Unavailable"}
+                </span>
+              </div>
+              <div className="telemetry-item">
+                <span className="telemetry-label">Total Models</span>
+                <span className="telemetry-value gold" id="countChip">
+                  {loading ? "…" : `${allModels.length} Models`}
+                </span>
+              </div>
+            </div>
           </div>
         </div>
       </header>

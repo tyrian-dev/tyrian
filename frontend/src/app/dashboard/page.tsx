@@ -625,56 +625,55 @@ export default function DashboardPage() {
             </p>
           </div>
           <div className="aside">
-            <span
-              className={`chip ${mounted && canManageKeys ? "chip-ok" : mounted && isConnected ? "chip-warn" : ""}`}
-              suppressHydrationWarning
-            >
-              <i />
-              {mounted && canManageKeys
-                ? `${activeNetwork.label} live`
-                : mounted && isConnected
-                  ? "Sign-in required"
-                  : activeNetwork.label}
-            </span>
-            <span className="chip">
-              Reset in{" "}
-              <b className="mono" id="resetIn" suppressHydrationWarning style={{ fontWeight: 500 }}>
-                {mounted ? formatCountdown(resetSeconds) : "--:--:--"}
-              </b>
-            </span>
+            <div className="telemetry-box" role="status" aria-label="Dashboard parameters">
+              <div className="telemetry-item">
+                <span className="telemetry-label">Network</span>
+                <span className="telemetry-value">{activeNetwork.label}</span>
+              </div>
+              <div className="telemetry-item">
+                <span className="telemetry-label">Session</span>
+                <span className={`telemetry-value ${mounted && canManageKeys ? "success" : ""}`}>
+                  {mounted && canManageKeys ? "Authenticated" : mounted && isConnected ? "Sign-in required" : "Disconnected"}
+                </span>
+              </div>
+              <div className="telemetry-item">
+                <span className="telemetry-label">Quota Reset</span>
+                <span className="telemetry-value gold" id="resetIn" suppressHydrationWarning>
+                  {mounted ? formatCountdown(resetSeconds) : "--:--:--"}
+                </span>
+              </div>
+            </div>
           </div>
         </div>
       </header>
 
       <div className="wrap">
-        {/* Banner Gate */}
-        <div className="section" style={{ paddingBottom: "24px" }}>
-          <div className="banner" id="gate" data-reveal>
-            <svg className="ico" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8" aria-hidden="true">
-              <path d="M12 9v4M12 17h.01M10.3 3.9 1.8 18a2 2 0 0 0 1.7 3h17a2 2 0 0 0 1.7-3L13.7 3.9a2 2 0 0 0-3.4 0Z" />
-            </svg>
-            <div className="grow gate">
-              <span id="gateText" suppressHydrationWarning>
-                {!mounted || !isConnected ? (
-                  <>
-                    <b>Connect wallet.</b> Connect your wallet to view daily inference quota, stake positions, and manage API keys on {activeNetwork.label}.
-                  </>
-                ) : !authenticated ? (
-                  <>
-                    <b>Wallet connected.</b> Finish sign-in to authenticate your session and manage API keys on {activeNetwork.label}.
-                  </>
-                ) : isStaker ? (
-                  <>
-                    <b>Live quota active.</b> Daily inference quota is synced with your on-chain stake on {activeNetwork.label}.
-                  </>
-                ) : (
-                  <>
-                    <b>No active stake found.</b> Stake USDG or Stock Tokens in the vaults to activate your daily inference quota.
-                  </>
-                )}
-              </span>
-              <span id="gateCta" suppressHydrationWarning>
-                {!mounted || !isConnected ? (
+        {/* Contextual Action Prompt (Only shown when action is needed; hidden when active staker) */}
+        {mounted && (!isConnected || !authenticated || !isStaker) && (
+          <div className="section" style={{ paddingBottom: "20px" }}>
+            <div className="prompt-strip" id="gate" data-reveal>
+              <div className="prompt-content">
+                <svg className="prompt-ico" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8" aria-hidden="true">
+                  <path d="M12 2v20M17 5H9.5a3.5 3.5 0 0 0 0 7h5a3.5 3.5 0 0 1 0 7H6" />
+                </svg>
+                <span id="gateText" suppressHydrationWarning>
+                  {!isConnected ? (
+                    <>
+                      <b>Connect wallet.</b> Connect your Web3 wallet to inspect inference quota, manage API keys, and monitor stake allocations on {activeNetwork.label}.
+                    </>
+                  ) : !authenticated ? (
+                    <>
+                      <b>Signature required.</b> Finish sign-in with your wallet to authenticate your session and manage API keys on {activeNetwork.label}.
+                    </>
+                  ) : (
+                    <>
+                      <b>No active stake found.</b> Stake USDG or Stock Tokens in the vaults to unlock daily AI inference quota and generate API keys.
+                    </>
+                  )}
+                </span>
+              </div>
+              <div className="prompt-cta" id="gateCta" suppressHydrationWarning>
+                {!isConnected ? (
                   <button className="btn btn-primary btn-sm" type="button" onClick={openWalletOnboarding}>
                     Connect wallet
                   </button>
@@ -682,19 +681,15 @@ export default function DashboardPage() {
                   <button className="btn btn-primary btn-sm" type="button" onClick={openWalletOnboarding}>
                     Continue sign-in
                   </button>
-                ) : isStaker ? (
-                  <Link href="/stake" className="btn btn-secondary btn-sm">
-                    Manage stake
-                  </Link>
                 ) : (
                   <Link href="/stake" className="btn btn-primary btn-sm">
                     Stake now
                   </Link>
                 )}
-              </span>
+              </div>
             </div>
           </div>
-        </div>
+        )}
 
         {/* 2-Column Dash: Meter + Stake Weight */}
         <div className="dash">
@@ -821,7 +816,7 @@ export default function DashboardPage() {
             ) : mounted && isConnected && quotaLoaded && !isStaker ? (
               <div style={{ padding: "20px 0" }}>
                 <p className="lead" style={{ fontSize: "15px", marginBottom: "12px" }}>
-                  No active stake found for this wallet on Robinhood Chain Testnet.
+                  No active stake found for this wallet on {activeNetwork.label}.
                 </p>
                 <p className="hint" style={{ marginBottom: "18px" }}>
                   Stake USDG or Stock Tokens in the vaults to unlock daily AI inference quota and create API keys.

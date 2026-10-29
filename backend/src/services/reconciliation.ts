@@ -7,6 +7,7 @@ import { alertService } from "./alert";
 import { dbService } from "./db";
 import { pricingService, PriceUnavailableError } from "./pricing";
 import { StakeManagerAbi, UsdgVaultAbi } from "@shared/contracts/abis";
+import { getAssetDecimals } from "./quota";
 
 export interface AssetReconciliation {
   symbol: string;
@@ -246,7 +247,8 @@ export class ReconciliationService {
         }
       }
 
-      const totalSharesNumber = Number(active + pending) / 1e18;
+      const decimals = getAssetDecimals(symbol !== "UNKNOWN" ? symbol : raw.assetAddress);
+      const totalSharesNumber = Number(active + pending) / (10 ** decimals);
       let priceUsd = 0;
       if (totalSharesNumber > 0) {
         if (symbol === "UNKNOWN") {

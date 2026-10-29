@@ -1,7 +1,7 @@
 import { redis } from "../services/redis";
 import { openRouter } from "../services/openrouter";
 import { indexerService, type StakePositionItem } from "../services/indexer";
-import { calculateBoost, formatUnits18 } from "../services/quota";
+import { calculateBoost, formatUnits18, formatUnitsAsset } from "../services/quota";
 import { tyrianNetwork } from "../config/network";
 import { dbService } from "../services/db";
 import { budgetGuard } from "../services/budget";
@@ -185,7 +185,7 @@ export async function runDailyEpochJob(params?: {
         if (symbol === "UNKNOWN") {
           throw new PriceUnavailableError(h.token, "unsupported_asset");
         }
-        const amount = formatUnits18(h.yieldAmount);
+        const amount = formatUnitsAsset(h.yieldAmount, symbol);
         const price = await pricingService.getUsdPrice(symbol);
         sumYieldUsd += amount * price;
       }
@@ -202,7 +202,7 @@ export async function runDailyEpochJob(params?: {
       for (const fs of feeSplits) {
         const symbol = resolveAssetSymbol(fs.token);
         if (symbol === "UNKNOWN") continue;
-        const feeAmount = formatUnits18(fs.treasuryAmount);
+        const feeAmount = formatUnitsAsset(fs.treasuryAmount, symbol);
         const price = await pricingService.getUsdPrice(symbol);
         sumFeeUsd += feeAmount * price;
       }
@@ -219,15 +219,16 @@ export async function runDailyEpochJob(params?: {
       const currentEpochNumber = BigInt(Math.floor(epochTimestamp / 86400000));
 
       const rows = rawPositions.map((raw) => {
+        const symbol = resolveAssetSymbol(raw.assetAddress);
         const effectiveEpoch = raw.effectiveEpoch ? BigInt(raw.effectiveEpoch) : 0n;
         // Stake is only active if effectiveEpoch <= currentEpochNumber (anti-flash-stake)
         const pendingEligible = effectiveEpoch === 0n || effectiveEpoch <= currentEpochNumber;
-        const effectiveShares = formatUnits18(raw.activeShares) + (pendingEligible ? formatUnits18(raw.pendingShares) : 0);
+        const effectiveShares = formatUnitsAsset(raw.activeShares, symbol) + (pendingEligible ? formatUnitsAsset(raw.pendingShares, symbol) : 0);
 
         return {
           raw,
           user: raw.userAddress.toLowerCase(),
-          symbol: resolveAssetSymbol(raw.assetAddress),
+          symbol,
           effectiveShares,
         };
       });

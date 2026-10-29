@@ -15,6 +15,8 @@ import {
   isAddress,
 } from "@shared/contracts/addresses";
 import { isTargetChain } from "@/lib/wallet/targetChain";
+import { formatWalletError } from "@/lib/wallet/errors";
+import { TokenLogo } from "@/components/ui/TokenLogo";
 import type { AssetDef, UserPosition } from "@/lib/data/types";
 
 interface LivePositionItem {
@@ -183,11 +185,37 @@ export default function StakePage() {
     refreshOnChainBalances();
   }, [address, isConnected, refreshPositions, refreshOnChainBalances]);
 
+  // Resolve token decimals based on active network manifest
+  const getAssetDecimals = useCallback((symbol: string): number => {
+    if (symbol === "USDG") return activeNetwork.tokens.USDG?.decimals ?? 6;
+    if (symbol === "TYR") return activeNetwork.tokens.TYR?.decimals ?? 18;
+    if (symbol === "WETH") return activeNetwork.tokens.WETH?.decimals ?? 18;
+    const stock = activeNetwork.stocks?.[symbol];
+    if (stock?.decimals !== undefined) return stock.decimals;
+    return 18;
+  }, []);
+
+  const safeParseUnits = useCallback((val: string, decimals: number): bigint => {
+    try {
+      const trimmed = val.trim();
+      if (!trimmed || Number.isNaN(Number(trimmed))) return 0n;
+      const parts = trimmed.split(".");
+      let normalized = parts[0] || "0";
+      if (parts.length > 1) {
+        normalized += `.${parts[1].slice(0, decimals)}`;
+      }
+      return parseUnits(normalized, decimals);
+    } catch {
+      return 0n;
+    }
+  }, []);
+
   // Read available balance for an asset (uses on-chain if connected, 0 otherwise)
   const getAvailableBalance = (symbol: string): number => {
     if (isConnected && onChainBalances[symbol] !== undefined) {
       try {
-        return Number(formatUnits(onChainBalances[symbol], 18));
+        const decimals = getAssetDecimals(symbol);
+        return Number(formatUnits(onChainBalances[symbol], decimals));
       } catch {
         return 0;
       }
@@ -230,8 +258,10 @@ export default function StakePage() {
 
   if (isConnected) {
     livePositions.forEach((p) => {
-      const activeNum = Number(p.activeShares) / 1e18;
-      const pendingNum = Number(p.pendingShares) / 1e18;
+      const decimals = getAssetDecimals(p.asset);
+      const factor = 10 ** decimals;
+      const activeNum = Number(p.activeShares) / factor;
+      const pendingNum = Number(p.pendingShares) / factor;
       const totalNum = activeNum + pendingNum;
       if (p.asset === "TYR") {
         tyrStakeCount += totalNum;
@@ -255,7 +285,8 @@ export default function StakePage() {
     if (isConnected) {
       const pos = livePositions.find((p) => p.asset === symbol);
       if (!pos) return 0;
-      return (Number(pos.activeShares) + Number(pos.pendingShares)) / 1e18;
+      const decimals = getAssetDecimals(symbol);
+      return (Number(pos.activeShares) + Number(pos.pendingShares)) / (10 ** decimals);
     }
     return 0;
   };
@@ -292,7 +323,8 @@ export default function StakePage() {
 
     try {
       resetTxState();
-      const amount = parseUnits("1000", 18);
+      const decimals = getAssetDecimals(asset.symbol);
+      const amount = safeParseUnits("1000", decimals);
       await mintMockTokens(tokenAddr, amount);
       await refreshOnChainBalances();
     } catch (err) {
@@ -316,11 +348,13 @@ export default function StakePage() {
         setModalError("Please enter a valid amount greater than 0.");
         return;
       }
-      const amount = parseUnits(modalAmount, 18);
+      const decimals = getAssetDecimals(modalAsset.symbol);
+      const amount = safeParseUnits(modalAmount, decimals);
       await approveToken(tokenAddr, amount);
       await refreshOnChainBalances();
     } catch (err) {
-      setModalError((err as Error)?.message || "Approval failed.");
+      const cleanErr = formatWalletError(err, "Approval failed.");
+      if (cleanErr) setModalError(cleanErr);
     }
   };
 
@@ -352,13 +386,15 @@ export default function StakePage() {
         return;
       }
 
-      const amount = parseUnits(modalAmount, 18);
+      const decimals = getAssetDecimals(modalAsset.symbol);
+      const amount = safeParseUnits(modalAmount, decimals);
       await stakeTokens(tokenAddr, amount);
       setInputs((prev) => ({ ...prev, [modalAsset.symbol]: "" }));
       await refreshOnChainBalances();
       await refreshPositions();
     } catch (err) {
-      setModalError((err as Error)?.message || "Staking transaction failed.");
+      const cleanErr = formatWalletError(err, "Staking transaction failed.");
+      if (cleanErr) setModalError(cleanErr);
     }
   };
 
@@ -388,12 +424,14 @@ export default function StakePage() {
 
     try {
       setUnstakeError("");
-      const amount = parseUnits(unstakeAmount, 18);
+      const decimals = getAssetDecimals(unstakeAsset);
+      const amount = safeParseUnits(unstakeAmount, decimals);
       await requestUnstakeTokens(unstakeAssetAddress, amount);
       await refreshPositions();
       await refreshOnChainBalances();
     } catch (err) {
-      setUnstakeError((err as Error)?.message || "Unstake request failed.");
+      const cleanErr = formatWalletError(err, "Unstake request failed.");
+      if (cleanErr) setUnstakeError(cleanErr);
     }
   };
 
@@ -406,7 +444,8 @@ export default function StakePage() {
       await refreshPositions();
       await refreshOnChainBalances();
     } catch (err) {
-      console.error("Withdraw error:", err);
+      const cleanErr = formatWalletError(err, "Withdrawal failed.");
+      if (cleanErr) console.error("Withdraw error:", cleanErr);
     }
   };
 
@@ -416,8 +455,9 @@ export default function StakePage() {
   const modalInvalid =
     !modalAsset || !modalAmount || modalNumeric <= 0 || modalNumeric > modalAvailable;
 
+  const modalDecimals = modalAsset ? getAssetDecimals(modalAsset.symbol) : 18;
   const modalRequiredBigInt = modalAmount && !Number.isNaN(Number(modalAmount)) && Number(modalAmount) > 0
-    ? parseUnits(modalAmount, 18)
+    ? safeParseUnits(modalAmount, modalDecimals)
     : 0n;
 
   const currentAllowance = modalAsset ? getAssetAllowance(modalAsset.symbol) : 0n;
@@ -439,39 +479,41 @@ export default function StakePage() {
             </p>
           </div>
           <div className="aside">
-            <span className="chip chip-warn">
-              <i />
-              {activeNetwork.label}
-            </span>
-            <span className="chip">Cooldown 7 days</span>
-            <span className="chip">
-              Next epoch <b className="mono" id="epochIn" suppressHydrationWarning style={{ fontWeight: 500 }}>{nextEpochCountdown}</b>
-            </span>
+            <div className="telemetry-box" role="status" aria-label="Protocol parameters">
+              <div className="telemetry-item">
+                <span className="telemetry-label">Network</span>
+                <span className="telemetry-value">{activeNetwork.label}</span>
+              </div>
+              <div className="telemetry-item">
+                <span className="telemetry-label">Cooldown</span>
+                <span className="telemetry-value">7 Days</span>
+              </div>
+              <div className="telemetry-item">
+                <span className="telemetry-label">Next Epoch</span>
+                <span className="telemetry-value gold" id="epochIn" suppressHydrationWarning>
+                  {nextEpochCountdown}
+                </span>
+              </div>
+            </div>
           </div>
         </div>
       </header>
 
       <div className="wrap">
-        {/* Network & Live Mode Banner */}
         <div className="section" style={{ paddingBottom: 0 }}>
-          <div className="banner" id="networkBanner" data-reveal>
-            <svg className="ico" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8" aria-hidden="true">
-              <path d="M12 9v4M12 17h.01M10.3 3.9 1.8 18a2 2 0 0 0 1.7 3h17a2 2 0 0 0 1.7-3L13.7 3.9a2 2 0 0 0-3.4 0Z" />
-            </svg>
-            <div className="grow">
-              {isConnected ? (
+          {/* Conditional Wrong-Network Banner (Only shown if connected to incorrect chain) */}
+          {isConnected && !isCorrectChain && (
+            <div className="banner" id="networkBanner" data-reveal style={{ borderColor: "rgba(214, 69, 69, 0.4)", background: "rgba(214, 69, 69, 0.08)", marginBottom: "20px" }}>
+              <svg className="ico" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8" aria-hidden="true" style={{ color: "var(--danger)" }}>
+                <path d="M12 9v4M12 17h.01M10.3 3.9 1.8 18a2 2 0 0 0 1.7 3h17a2 2 0 0 0 1.7-3L13.7 3.9a2 2 0 0 0-3.4 0Z" />
+              </svg>
+              <div className="grow">
                 <span>
-                  <b>Connected to {activeNetwork.label} (Chain ID {activeNetwork.chainId}).</b> Staking deposits directly
-                  into the <code style={{ color: "var(--gold-400)" }}>StakeManager</code> contract ({stakeManagerAddress ? `${stakeManagerAddress.slice(0, 6)}…${stakeManagerAddress.slice(-4)}` : "active"}).
-                  {activeNetwork.name === "testnet" && " Use the faucet buttons below to mint test tokens."}
+                  <b>Wrong network detected.</b> Please switch your wallet to {activeNetwork.label} (Chain ID {activeNetwork.chainId}) to stake and manage assets.
                 </span>
-              ) : (
-                <span>
-                  <b>Wallet not connected.</b> Connect your Web3 wallet to Robinhood Chain to view real on-chain balances and stake tokens.
-                </span>
-              )}
+              </div>
             </div>
-          </div>
+          )}
 
           {/* 4 Summary Tiles */}
           <div className="tiles summary" data-reveal aria-live="polite">
@@ -565,12 +607,18 @@ export default function StakePage() {
                 <div key={asset.symbol} className="tilt">
                   <div className={`acard ${asset.type}`}>
                     <div className="shine" />
-                    <div className="top">
-                      <div>
-                        <div className="tk">{asset.symbol === "TYR" ? "$TYR" : asset.symbol}</div>
-                        <div className="nm">{asset.name}</div>
+                    
+                    <div className="top top-header-divider">
+                      <div style={{ display: "flex", alignItems: "center", gap: "12px", width: "100%" }}>
+                        <TokenLogo symbol={asset.symbol} size={44} />
+                        <div style={{ flex: 1, minWidth: 0 }}>
+                          <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between", gap: "8px" }}>
+                            <div className="tk">{asset.symbol === "TYR" ? "$TYR" : asset.symbol}</div>
+                            <span className={`chip ${asset.type === "boost" ? "chip-gold" : ""}`}>{asset.pool}</span>
+                          </div>
+                          <div className="nm">{asset.name}</div>
+                        </div>
                       </div>
-                      <span className={`chip ${asset.type === "boost" ? "chip-gold" : ""}`}>{asset.pool}</span>
                     </div>
 
                     <div className="meta">
@@ -719,8 +767,10 @@ export default function StakePage() {
                   <>
                     {/* Active & Pending Positions */}
                     {livePositions.map((pos) => {
-                      const activeAmt = Number(pos.activeShares) / 1e18;
-                      const pendingAmt = Number(pos.pendingShares) / 1e18;
+                      const decimals = getAssetDecimals(pos.asset);
+                      const factor = 10 ** decimals;
+                      const activeAmt = Number(pos.activeShares) / factor;
+                      const pendingAmt = Number(pos.pendingShares) / factor;
                       const totalAmt = activeAmt + pendingAmt;
                       if (totalAmt <= 0) return null;
 
@@ -738,7 +788,7 @@ export default function StakePage() {
                                 +{fmtAmount(pos.asset, pendingAmt)}
                               </span>
                             ) : (
-                              "—"
+                              "-"
                             )}
                           </td>
                           <td className="num" data-l="Value">${pos.estimatedUsdValue.toLocaleString("en-US", { minimumFractionDigits: 2 })}</td>
@@ -772,7 +822,8 @@ export default function StakePage() {
 
                     {/* Cooldown Requests */}
                     {liveCooldowns.map((cd) => {
-                      const sharesAmt = Number(cd.shares) / 1e18;
+                      const decimals = getAssetDecimals(cd.asset);
+                      const sharesAmt = Number(cd.shares) / (10 ** decimals);
                       const unlockTimeMs = Number(cd.unlockAt) * 1000;
                       const isUnlocked = Date.now() >= unlockTimeMs;
                       const remainingSec = Math.max(0, Math.floor((unlockTimeMs - Date.now()) / 1000));
@@ -789,9 +840,9 @@ export default function StakePage() {
                               Request #{cd.requestId}
                             </small>
                           </td>
-                          <td className="num" data-l="Active">—</td>
+                          <td className="num" data-l="Active">-</td>
                           <td className="num" data-l="Cooldown">{fmtAmount(cd.asset, sharesAmt)}</td>
-                          <td className="num" data-l="Value">—</td>
+                          <td className="num" data-l="Value">-</td>
                           <td data-l="Status">
                             {isUnlocked ? (
                               <span className="chip" style={{ color: "var(--series-2)", borderColor: "rgba(80, 160, 255, 0.4)" }}>

@@ -44,6 +44,41 @@ export function calculateBoost(tyrUsdValue: number, baseAssetUsdValue: number): 
 }
 
 /**
+ * Resolve token decimals based on active network manifest
+ */
+export function getAssetDecimals(symbolOrAddress: string): number {
+  const s = symbolOrAddress.toLowerCase();
+  if (s === "usdg" || s === tyrianNetwork.tokens.USDG.address?.toLowerCase()) {
+    return tyrianNetwork.tokens.USDG.decimals ?? 6;
+  }
+  if (s === "tyr" || s === tyrianNetwork.tokens.TYR.address?.toLowerCase()) {
+    return tyrianNetwork.tokens.TYR.decimals ?? 18;
+  }
+  if (s === "weth" || s === tyrianNetwork.tokens.WETH.address?.toLowerCase()) {
+    return tyrianNetwork.tokens.WETH.decimals ?? 18;
+  }
+  for (const [stockSym, config] of Object.entries(tyrianNetwork.stocks)) {
+    if (s === stockSym.toLowerCase() || (config.address && config.address.toLowerCase() === s)) {
+      return config.decimals ?? 18;
+    }
+  }
+  return 18;
+}
+
+/**
+ * Convert BigInt string with dynamic token decimals to floating number
+ */
+export function formatUnitsAsset(rawVal: string | bigint | number, symbolOrAddress: string): number {
+  try {
+    const decimals = getAssetDecimals(symbolOrAddress);
+    const b = BigInt(rawVal);
+    return Number(b) / (10 ** decimals);
+  } catch {
+    return 0;
+  }
+}
+
+/**
  * Convert BigInt string with 18 decimals to floating USD value
  */
 export function formatUnits18(rawVal: string): number {
@@ -108,7 +143,7 @@ export class QuotaService {
     for (const p of positions) {
       const symbol = this.resolveAssetSymbol(p.assetAddress);
       // Effective shares = activeShares + pendingShares (pending will be active next epoch)
-      const sharesAmount = formatUnits18(p.activeShares) + formatUnits18(p.pendingShares);
+      const sharesAmount = formatUnitsAsset(p.activeShares, symbol) + formatUnitsAsset(p.pendingShares, symbol);
 
       // USDG is the accounting unit. TYR and stock tokens are priced from their
       // on-chain oracles; a missing/stale price throws instead of guessing.
@@ -197,7 +232,7 @@ export class QuotaService {
     let totalHarvestedUsd = 0;
     for (const h of harvests) {
       // Harvest events are denominated in the vault asset (USDG = $1.00).
-      totalHarvestedUsd += formatUnits18(h.yieldAmount);
+      totalHarvestedUsd += formatUnitsAsset(h.yieldAmount, "USDG");
     }
 
     // No harvested yield means no budget. Never inject a fake testnet minimum:
@@ -208,7 +243,7 @@ export class QuotaService {
     let totalPoolBaseUsd = 0;
     for (const pos of allPositions) {
       const sym = this.resolveAssetSymbol(pos.assetAddress);
-      const shares = formatUnits18(pos.activeShares) + formatUnits18(pos.pendingShares);
+      const shares = formatUnitsAsset(pos.activeShares, sym) + formatUnitsAsset(pos.pendingShares, sym);
       if (sym === "USDG") {
         totalPoolBaseUsd += shares * USDG_USD;
       }

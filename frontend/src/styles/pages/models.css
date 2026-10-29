@@ -8,7 +8,8 @@
 .page-models .search svg{position:absolute;left:14px;top:50%;transform:translateY(-50%);color:var(--text-muted)}
 .page-models .search input{width:100%;padding-left:40px}
 .page-models .provs{display:flex;gap:8px;flex-wrap:wrap;margin-bottom:18px}
-.page-models .provs button{min-height:44px;padding:0 14px;border-radius:999px;border:1px solid var(--border);font-size:14px;color:var(--text-muted)}
+.page-models .provs button{min-height:38px;padding:0 14px;border-radius:8px;border:1px solid var(--border);font-size:13px;color:var(--text-muted);transition:all .15s ease}
+.page-models .provs button:hover{border-color:var(--tyr-400);color:var(--text);background:rgba(234,182,208,.04)}
 .page-models .provs button[aria-pressed="true"]{border-color:var(--gold-500);color:var(--text);background:rgba(201,162,74,.1)}
 .page-models .mname b{display:block;font-weight:500}
 .page-models .mid{display:flex;align-items:center;gap:6px;margin-top:2px}
@@ -35,5 +36,5 @@
 @media (max-width:520px){
 .page-models #mTable tr{grid-template-columns:1fr 1fr;gap:6px 10px}
 .page-models .controls{grid-template-columns:1fr}
-.page-models .provs button{min-height:38px;padding:0 10px;font-size:13px}
+.page-models .provs button{min-height:34px;padding:0 10px;font-size:12px;border-radius:6px}
 }

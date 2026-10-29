@@ -10,6 +10,7 @@ import {
   isAddress,
 } from "@shared/contracts/addresses";
 import { TARGET_CHAIN_ID } from "@/lib/wallet/targetChain";
+import { formatWalletError } from "@/lib/wallet/errors";
 
 export const mockErc20Abi = [
   ...erc20Abi,
@@ -133,9 +134,13 @@ export function useStakeContract() {
         setState({ step: "idle", txHash: hash, error: null, isBusy: false });
         return hash;
       } catch (err) {
-        const msg = (err as Error)?.message || "Approval failed";
+        const cleanErr = formatWalletError(err, "Approval failed");
         console.error("[useStakeContract] approve error:", err);
-        setState({ step: "error", txHash: null, error: msg, isBusy: false });
+        if (cleanErr) {
+          setState({ step: "error", txHash: null, error: cleanErr, isBusy: false });
+        } else {
+          setState({ step: "idle", txHash: null, error: null, isBusy: false });
+        }
         throw err;
       }
     },
@@ -170,9 +175,13 @@ export function useStakeContract() {
         setState({ step: "success", txHash: hash, error: null, isBusy: false });
         return hash;
       } catch (err) {
-        const msg = (err as Error)?.message || "Staking transaction failed";
+        const cleanErr = formatWalletError(err, "Staking transaction failed");
         console.error("[useStakeContract] stake error:", err);
-        setState({ step: "error", txHash: null, error: msg, isBusy: false });
+        if (cleanErr) {
+          setState({ step: "error", txHash: null, error: cleanErr, isBusy: false });
+        } else {
+          setState({ step: "idle", txHash: null, error: null, isBusy: false });
+        }
         throw err;
       }
     },
@@ -207,9 +216,13 @@ export function useStakeContract() {
         setState({ step: "success", txHash: hash, error: null, isBusy: false });
         return hash;
       } catch (err) {
-        const msg = (err as Error)?.message || "Unstake request failed";
+        const cleanErr = formatWalletError(err, "Unstake request failed");
         console.error("[useStakeContract] requestUnstake error:", err);
-        setState({ step: "error", txHash: null, error: msg, isBusy: false });
+        if (cleanErr) {
+          setState({ step: "error", txHash: null, error: cleanErr, isBusy: false });
+        } else {
+          setState({ step: "idle", txHash: null, error: null, isBusy: false });
+        }
         throw err;
       }
     },
@@ -244,9 +257,13 @@ export function useStakeContract() {
         setState({ step: "success", txHash: hash, error: null, isBusy: false });
         return hash;
       } catch (err) {
-        const msg = (err as Error)?.message || "Withdrawal failed";
+        const cleanErr = formatWalletError(err, "Withdrawal failed");
         console.error("[useStakeContract] withdraw error:", err);
-        setState({ step: "error", txHash: null, error: msg, isBusy: false });
+        if (cleanErr) {
+          setState({ step: "error", txHash: null, error: cleanErr, isBusy: false });
+        } else {
+          setState({ step: "idle", txHash: null, error: null, isBusy: false });
+        }
         throw err;
       }
     },
@@ -281,9 +298,13 @@ export function useStakeContract() {
         setState({ step: "success", txHash: hash, error: null, isBusy: false });
         return hash;
       } catch (err) {
-        const msg = (err as Error)?.message || "Faucet mint failed";
+        const cleanErr = formatWalletError(err, "Faucet mint failed");
         console.error("[useStakeContract] mintMockTokens error:", err);
-        setState({ step: "error", txHash: null, error: msg, isBusy: false });
+        if (cleanErr) {
+          setState({ step: "error", txHash: null, error: cleanErr, isBusy: false });
+        } else {
+          setState({ step: "idle", txHash: null, error: null, isBusy: false });
+        }
         throw err;
       }
     },

@@ -83,24 +83,41 @@ const memoryFallback = new MemoryStorage();
 let redisClient: Redis | null = null;
 let isRedisConnected = false;
 
+function isRedisAvailable(): boolean {
+  if (!redisClient) return false;
+  return isRedisConnected || redisClient.status === "ready" || redisClient.status === "connecting";
+}
+
 try {
   redisClient = new Redis(redisUrl, {
     maxRetriesPerRequest: 1,
-    retryStrategy: () => null, // don't loop indefinitely in local dev
-    lazyConnect: true,
+    retryStrategy: (times) => {
+      // In local dev without REDIS_URL, stop retrying quickly to avoid log spam
+      if (!process.env.REDIS_URL && times > 3) {
+        return null;
+      }
+      return Math.min(times * 100, 3000);
+    },
+    enableOfflineQueue: true,
   });
 
-  // Attach error handler to prevent unhandled EventEmitter crash
-  redisClient.on("error", (err) => {
-    isRedisConnected = false;
-  });
-
-  redisClient.connect().then(() => {
+  redisClient.on("ready", () => {
     isRedisConnected = true;
     console.log("[Redis] Connected successfully to", redisUrl);
-  }).catch(() => {
+  });
+
+  redisClient.on("connect", () => {
+    isRedisConnected = true;
+  });
+
+  redisClient.on("error", (err) => {
+    if (redisClient?.status !== "ready") {
+      isRedisConnected = false;
+    }
+  });
+
+  redisClient.on("close", () => {
     isRedisConnected = false;
-    console.log("[Redis] No local Redis detected. Using in-memory store for quota & session caching.");
   });
 } catch {
   console.log("[Redis] Using in-memory fallback.");
@@ -108,14 +125,14 @@ try {
 
 export const redis = {
   async get(key: string): Promise<string | null> {
-    if (isRedisConnected && redisClient) {
+    if (isRedisAvailable() && redisClient) {
       try { return await redisClient.get(key); } catch {}
     }
     return memoryFallback.get(key);
   },
 
   async set(key: string, value: string, expirySeconds?: number): Promise<string> {
-    if (isRedisConnected && redisClient) {
+    if (isRedisAvailable() && redisClient) {
       try {
         if (expirySeconds) return await redisClient.set(key, value, "EX", expirySeconds);
         return await redisClient.set(key, value);
@@ -129,7 +146,7 @@ export const redis = {
    * Returns true if key was set, false if key already existed.
    */
   async setNX(key: string, value: string, expirySeconds: number): Promise<boolean> {
-    if (isRedisConnected && redisClient) {
+    if (isRedisAvailable() && redisClient) {
       try {
         const res = await redisClient.set(key, value, "EX", expirySeconds, "NX");
         return res === "OK";
@@ -153,7 +170,7 @@ export const redis = {
   },
 
   async del(key: string): Promise<number> {
-    if (isRedisConnected && redisClient) {
+    if (isRedisAvailable() && redisClient) {
       try { return await redisClient.del(key); } catch {}
     }
     return memoryFallback.del(key);
@@ -161,10 +178,22 @@ export const redis = {
 
   /**
    * Atomically read and delete a one-time value such as a SIWE nonce.
+   * Uses MULTI ... GET ... DEL ... EXEC for universal atomic compatibility across all Redis versions (2.0 to 7.x+).
    */
   async consume(key: string): Promise<string | null> {
-    if (isRedisConnected && redisClient) {
-      try { return await redisClient.getdel(key); } catch {}
+    if (isRedisAvailable() && redisClient) {
+      try {
+        const results = await redisClient.multi().get(key).del(key).exec();
+        if (results && results[0]) {
+          const [err, val] = results[0];
+          if (!err && val !== null && val !== undefined) {
+            return String(val);
+          }
+        }
+        return null;
+      } catch (err) {
+        console.warn(`[Redis] consume multi/exec failed for key ${key}:`, err);
+      }
     }
     const value = await memoryFallback.get(key);
     if (value !== null) await memoryFallback.del(key);
@@ -172,21 +201,21 @@ export const redis = {
   },
 
   async sadd(key: string, ...members: string[]): Promise<number> {
-    if (isRedisConnected && redisClient) {
+    if (isRedisAvailable() && redisClient) {
       try { return await redisClient.sadd(key, ...members); } catch {}
     }
     return memoryFallback.sadd(key, ...members);
   },
 
   async srem(key: string, ...members: string[]): Promise<number> {
-    if (isRedisConnected && redisClient) {
+    if (isRedisAvailable() && redisClient) {
       try { return await redisClient.srem(key, ...members); } catch {}
     }
     return memoryFallback.srem(key, ...members);
   },
 
   async smembers(key: string): Promise<string[]> {
-    if (isRedisConnected && redisClient) {
+    if (isRedisAvailable() && redisClient) {
       try { return await redisClient.smembers(key); } catch {}
     }
     return memoryFallback.smembers(key);
@@ -194,7 +223,7 @@ export const redis = {
 
   async getQuota(userAddress: string): Promise<{ allocatedUsd: number; usedUsd: number }> {
     const key = `tyrian:quota:${userAddress.toLowerCase()}`;
-    if (isRedisConnected && redisClient) {
+    if (isRedisAvailable() && redisClient) {
       try {
         const raw = await redisClient.hgetall(key);
         if (raw && Object.keys(raw).length > 0) {
@@ -213,7 +242,7 @@ export const redis = {
   },
 
   async expire(key: string, seconds: number): Promise<boolean> {
-    if (isRedisConnected && redisClient) {
+    if (isRedisAvailable() && redisClient) {
       try {
         const res = await redisClient.expire(key, seconds);
         return res === 1;
@@ -225,7 +254,7 @@ export const redis = {
   async setQuota(userAddress: string, allocatedUsd: number, usedUsd: number = 0, ttlSeconds: number = 172800): Promise<void> {
     const key = `tyrian:quota:${userAddress.toLowerCase()}`;
     const data = { allocated: allocatedUsd.toString(), used: usedUsd.toString() };
-    if (isRedisConnected && redisClient) {
+    if (isRedisAvailable() && redisClient) {
       try {
         await redisClient.hset(key, data);
         if (ttlSeconds > 0) {
@@ -245,7 +274,7 @@ export const redis = {
     usedMemoryHuman: string;
     maxmemoryPolicy: string;
   }> {
-    if (isRedisConnected && redisClient) {
+    if (isRedisAvailable() && redisClient) {
       try {
         const info = await redisClient.info("memory");
         const usedMemMatch = info.match(/used_memory_human:([^\r\n]+)/);

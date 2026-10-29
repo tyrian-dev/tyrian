@@ -9,6 +9,7 @@
 .page-stake .acard.base{background:color-mix(in srgb,var(--tyr-700) 55%,var(--surface))}
 [data-theme="light"] .page-stake .acard.base{background:var(--tyr-100)}
 .page-stake .acard .top{display:flex;justify-content:space-between;align-items:flex-start;gap:10px}
+.page-stake .acard .top-header-divider{padding-bottom:12px;border-bottom:1px solid var(--border);width:100%}
 .page-stake .acard .tk{font:600 26px/1 "Inter Tight";letter-spacing:-.01em}
 .page-stake .acard.boost .tk{color:var(--gold-500)}
 .page-stake .acard .nm{font-size:13px;color:var(--text-muted);margin-top:4px}

@@ -205,15 +205,18 @@ gatewayRouter.post(
       void budgetGuard.recordRefund(estimatedCost);
       metricsService.recordUpstreamError(response.status.toString());
       metricsService.recordGatewayRequest(modelId, response.status);
+      const upstreamBody = await response.json().catch(() => null);
       return c.json(
         {
           error: {
-            message: "Upstream AI model provider temporarily unavailable",
-            type: "upstream_error",
-            code: response.status,
+            message:
+              upstreamBody?.error?.message ||
+              "Upstream AI model provider temporarily unavailable",
+            type: upstreamBody?.error?.type || "upstream_error",
+            code: upstreamBody?.error?.code || response.status,
           },
         },
-        502,
+        (response.status >= 500 && response.status <= 504 ? response.status : 502) as 502 | 503,
       );
     }
   } catch (err) {

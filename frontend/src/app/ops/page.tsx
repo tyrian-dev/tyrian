@@ -168,10 +168,10 @@ export default function OpsMonitoringPage() {
               Gateway Uptime
             </div>
             <div style={{ fontSize: "1.4rem", fontWeight: 700 }}>
-              {telemetry ? formatUptime(telemetry.uptimeSeconds) : "—"}
+              {telemetry ? formatUptime(telemetry.uptimeSeconds) : "-"}
             </div>
             <div style={{ fontSize: "0.8rem", opacity: 0.6, marginTop: 4 }}>
-              Requests: {telemetry?.http.totalRequests.toLocaleString() ?? "—"}
+              Requests: {telemetry?.http.totalRequests.toLocaleString() ?? "-"}
             </div>
           </div>
 
@@ -206,7 +206,7 @@ export default function OpsMonitoringPage() {
               {(reconciliation?.allMatched ?? true) ? "0 Diff (Solvent)" : `Discrepancy: ${reconciliation?.totalDiff}`}
             </div>
             <div style={{ fontSize: "0.8rem", opacity: 0.6, marginTop: 4 }}>
-              Block: #{reconciliation?.blockNumber ?? "—"}
+              Block: #{reconciliation?.blockNumber ?? "-"}
             </div>
           </div>
 

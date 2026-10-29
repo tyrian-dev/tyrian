@@ -1,5 +1,9 @@
 import { ponder } from "ponder:registry";
 import {
+  getStockVaults,
+  resolveNetworkName,
+} from "../../shared/contracts/addresses";
+import {
   assetConfigEvent,
   burnEvent,
   feeSplitEvent,
@@ -161,18 +165,25 @@ ponder.on("UsdgVault:Harvested", async ({ event, context }) => {
   });
 });
 
-ponder.on("StockVault:Harvested", async ({ event, context }) => {
-  const { asset, yieldAmount, treasury } = event.args;
+const activeNetworkName = resolveNetworkName(
+  process.env.INDEXER_NETWORK ?? process.env.TYRIAN_NETWORK ?? process.env.APP_ENV,
+);
+const activeStockVaults = getStockVaults(activeNetworkName);
 
-  await context.db.insert(harvestEvent).values({
-    id: `${event.transaction.hash}-${event.log.logIndex}`,
-    token: asset.toLowerCase(),
-    yieldAmount,
-    treasury: treasury.toLowerCase(),
-    txHash: event.transaction.hash,
-    blockTimestamp: event.block.timestamp,
+if (activeStockVaults.length > 0) {
+  ponder.on("StockVault:Harvested", async ({ event, context }) => {
+    const { asset, yieldAmount, treasury } = event.args;
+
+    await context.db.insert(harvestEvent).values({
+      id: `${event.transaction.hash}-${event.log.logIndex}`,
+      token: asset.toLowerCase(),
+      yieldAmount,
+      treasury: treasury.toLowerCase(),
+      txHash: event.transaction.hash,
+      blockTimestamp: event.block.timestamp,
+    });
   });
-});
+}
 
 ponder.on("FeeSplitter:FeesSplit", async ({ event, context }) => {
   const { token, treasuryAmt, buybackAmt } = event.args;

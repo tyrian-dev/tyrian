@@ -9,6 +9,7 @@ import { MurexCanvas } from "@/components/hero/MurexCanvas";
 import { HeroWaveBackground } from "@/components/hero/HeroWaveBackground";
 import { Odometer } from "@/components/ui/Odometer";
 import { CaBadge } from "@/components/ui/CaBadge";
+import { TokenLogo } from "@/components/ui/TokenLogo";
 import { useTyrianSession } from "@/providers/TyrianSessionProvider";
 import { useWalletOnboarding } from "@/hooks/useWalletOnboarding";
 import { TARGET_CHAIN_ID } from "@/lib/wallet/targetChain";
@@ -113,11 +114,11 @@ export default function HomePage() {
   const poolShare = totalWeight > 0 ? ((userWeight / totalWeight) * 100).toFixed(2) : "0.00";
 
   // Live figures are only shown when the API returned a real value. A missing
-  // epoch or a failed request renders "—", never a preview number.
+  // epoch or a failed request renders "-", never a preview number.
   const statValue = (value: number | null, format: (n: number) => string): string => {
     if (statsMode === "live" && value !== null) return format(value);
     if (statsMode === "loading") return "…";
-    return "—";
+    return "-";
   };
 
   // Ring offset calculation (circumference: 540.35, visual scale from the template)
@@ -775,10 +776,15 @@ export default function HomePage() {
                   >
                     <use href="#murex" />
                   </svg>
-                  <div>
-                    <div className="tk">{item.tk}</div>
-                    <div className="co">{item.co}</div>
+
+                  <div className="asset-header">
+                    <div className="asset-header-text">
+                      <div className="tk">{item.tk}</div>
+                      <div className="co">{item.co}</div>
+                    </div>
+                    <TokenLogo symbol={item.tk} size={50} variant="top-right" />
                   </div>
+
                   <div className="rows">
                     {item.kind ? (
                       <>
@@ -990,7 +996,6 @@ export default function HomePage() {
             <div className="tilt">
               <div className="p-card">
                 <div className="shine" />
-                <span className="ix">01</span>
                 <h3>No one else&#39;s keys</h3>
                 <p>Provider access runs on Tyrian&#39;s own accounts. You only ever hold a Tyrian key.</p>
               </div>
@@ -998,7 +1003,6 @@ export default function HomePage() {
             <div className="tilt">
               <div className="p-card">
                 <div className="shine" />
-                <span className="ix">02</span>
                 <h3>Non-custodial</h3>
                 <p>Admins have no function that moves user assets. Pause stops deposits, never withdrawals.</p>
               </div>
@@ -1006,7 +1010,6 @@ export default function HomePage() {
             <div className="tilt">
               <div className="p-card">
                 <div className="shine" />
-                <span className="ix">03</span>
                 <h3>Real yield first</h3>
                 <p>$TYR boosts. Base quota stands on yield from real assets.</p>
               </div>
@@ -1014,7 +1017,6 @@ export default function HomePage() {
             <div className="tilt">
               <div className="p-card">
                 <div className="shine" />
-                <span className="ix">04</span>
                 <h3>Prompt privacy</h3>
                 <p>No prompt or response content is stored. Only model, tokens, cost and latency.</p>
               </div>

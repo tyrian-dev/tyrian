@@ -52,17 +52,18 @@ for (const [name, abi] of Object.entries(abis) as Array<[ContractName, unknown]>
   };
 }
 
-// One StockVault per ticker. Ponder accepts multiple addresses for one contract
-// key, so a single "StockVault:Harvested" handler covers all stock vaults.
-// Register it even with an empty array: the handler still resolves, and an
-// empty address list matches no logs until vaults are added to the manifest.
+// One StockVault per ticker. In Ponder, only register the contract when there
+// is at least one vault address deployed; an empty array [] produces an invalid
+// SQL `WHERE "address" IN ()` clause in PostgreSQL.
 const stockVaults = getStockVaults(networkName);
-contracts.StockVault = {
-  network: {
-    [networkName]: { address: stockVaults, startBlock },
-  },
-  abi: StockVaultAbi,
-};
+if (stockVaults.length > 0) {
+  contracts.StockVault = {
+    network: {
+      [networkName]: { address: stockVaults, startBlock },
+    },
+    abi: StockVaultAbi,
+  };
+}
 
 if (!contracts.StakeManager) {
   throw new Error(

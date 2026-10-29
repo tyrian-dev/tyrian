@@ -4,6 +4,7 @@ import { dbService } from "./db";
 import { pricingService } from "./pricing";
 import { runwayService, type InferenceRunwayReport } from "./runway";
 import { portfolioVaultService } from "./portfolio-vault";
+import { formatUnitsAsset } from "./quota";
 
 export interface TreasuryPortfolioItem {
   symbol: string;
@@ -143,7 +144,7 @@ export class TreasuryService {
     // 1. Process Harvest Events
     for (const h of harvestEvents) {
       const sym = this.resolveTokenSymbol(h.token);
-      const amt = formatUnits18(h.yieldAmount);
+      const amt = formatUnitsAsset(h.yieldAmount, sym);
       const price = await this.getTokenPrice(sym);
       const valUsd = amt * price;
 
@@ -159,7 +160,7 @@ export class TreasuryService {
     // 2. Process Fee Splits (80% Treasury / 20% Buyback)
     for (const fs of feeSplits) {
       const sym = this.resolveTokenSymbol(fs.token);
-      const treasuryAmt = formatUnits18(fs.treasuryAmount);
+      const treasuryAmt = formatUnitsAsset(fs.treasuryAmount, sym);
       const price = await this.getTokenPrice(sym);
       const valUsd = treasuryAmt * price;
 
@@ -174,7 +175,7 @@ export class TreasuryService {
 
     // 3. Process Burn Events
     for (const b of burns) {
-      const amt = formatUnits18(b.amount);
+      const amt = formatUnitsAsset(b.amount, "TYR");
       totalTyrBurned += amt;
     }
 
@@ -317,7 +318,7 @@ export class TreasuryService {
       const dateKey = new Date(Number(h.blockTimestamp) * 1000).toISOString().split("T")[0];
       const sym = this.resolveTokenSymbol(h.token);
       const price = await this.getTokenPrice(sym);
-      const val = formatUnits18(h.yieldAmount) * price;
+      const val = formatUnitsAsset(h.yieldAmount, sym) * price;
 
       if (pointsMap[dateKey]) {
         pointsMap[dateKey].inflowUsd += val;
@@ -329,7 +330,7 @@ export class TreasuryService {
       const dateKey = new Date(Number(fs.blockTimestamp) * 1000).toISOString().split("T")[0];
       const sym = this.resolveTokenSymbol(fs.token);
       const price = await this.getTokenPrice(sym);
-      const val = formatUnits18(fs.treasuryAmount) * price;
+      const val = formatUnitsAsset(fs.treasuryAmount, sym) * price;
 
       if (pointsMap[dateKey]) {
         pointsMap[dateKey].inflowUsd += val;
@@ -345,7 +346,7 @@ export class TreasuryService {
 
     const formattedHarvests: FormattedHarvestItem[] = harvestEvents.slice(0, 50).map((h) => {
       const sym = this.resolveTokenSymbol(h.token);
-      const amt = formatUnits18(h.yieldAmount);
+      const amt = formatUnitsAsset(h.yieldAmount, sym);
       return {
         id: h.id,
         token: h.token,
@@ -361,7 +362,7 @@ export class TreasuryService {
 
     const formattedBurns: FormattedBurnItem[] = burns.slice(0, 50).map((b) => {
       const sym = this.resolveTokenSymbol(b.token);
-      const amt = formatUnits18(b.amount);
+      const amt = formatUnitsAsset(b.amount, sym);
       return {
         id: b.id,
         token: b.token,

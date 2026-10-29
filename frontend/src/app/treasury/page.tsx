@@ -330,18 +330,25 @@ export default function TreasuryPage() {
             </p>
           </div>
           <div className="aside">
-            <span className={`chip ${isLiveLoaded ? "" : "chip-warn"}`}>
-              <i style={isLiveLoaded ? { background: "var(--success)" } : undefined} />
-              {isLiveLoaded ? `Live · ${activeNetwork.label}` : "Sample data"}
-            </span>
-            <span className="chip">Robinhood Chain Testnet</span>
+            <div className="telemetry-box" role="status" aria-label="Treasury telemetry">
+              <div className="telemetry-item">
+                <span className="telemetry-label">Network</span>
+                <span className="telemetry-value">{activeNetwork.label}</span>
+              </div>
+              <div className="telemetry-item">
+                <span className="telemetry-label">Telemetry</span>
+                <span className={`telemetry-value ${isLiveLoaded ? "success" : "gold"}`}>
+                  {isLiveLoaded ? "Live On-Chain" : "Indexing…"}
+                </span>
+              </div>
+            </div>
           </div>
         </div>
       </header>
 
       <div className="wrap">
         <div className="section" style={{ paddingBottom: 0 }}>
-          <div className="banner" data-reveal>
+          <div className="banner" data-reveal style={isLiveLoaded ? { borderColor: "rgba(46, 158, 107, 0.3)", background: "rgba(46, 158, 107, 0.05)" } : undefined}>
             <svg
               className="ico"
               width="18"
@@ -351,8 +358,13 @@ export default function TreasuryPage() {
               stroke="currentColor"
               strokeWidth="1.8"
               aria-hidden="true"
+              style={{ color: isLiveLoaded ? "var(--success)" : "var(--warning)" }}
             >
-              <path d="M12 9v4M12 17h.01M10.3 3.9 1.8 18a2 2 0 0 0 1.7 3h17a2 2 0 0 0 1.7-3L13.7 3.9a2 2 0 0 0-3.4 0Z" />
+              {isLiveLoaded ? (
+                <path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z" />
+              ) : (
+                <path d="M12 9v4M12 17h.01M10.3 3.9 1.8 18a2 2 0 0 0 1.7 3h17a2 2 0 0 0 1.7-3L13.7 3.9a2 2 0 0 0-3.4 0Z" />
+              )}
             </svg>
             <div className="grow">
               {isLiveLoaded ? (
@@ -362,7 +374,7 @@ export default function TreasuryPage() {
                 </span>
               ) : (
                 <span>
-                  <b>Sample data mode.</b> Contracts are active on testnet. Connecting to backend treasury service…
+                  <b>Sample data mode.</b> Contracts are active on {activeNetwork.label}. Connecting to backend treasury service…
                 </span>
               )}
             </div>
@@ -720,10 +732,10 @@ export default function TreasuryPage() {
                       {x.held > 0 ? x.held.toFixed(3) : "0.000"}
                     </td>
                     <td className="num" data-l="Avg buy">
-                      {x.avg !== null ? fmtUSD(x.avg, 2) : "—"}
+                      {x.avg !== null ? fmtUSD(x.avg, 2) : "N/A"}
                     </td>
                     <td className="num" data-l="Price">
-                      {x.price !== null ? fmtUSD(x.price, 2) : "—"}
+                      {x.price !== null ? fmtUSD(x.price, 2) : "N/A"}
                     </td>
                     <td className="num" data-l="Value">
                       {fmtUSD(x.val, 2)}
@@ -735,7 +747,6 @@ export default function TreasuryPage() {
                       {x.val > 0 ? (
                         Math.abs(x.drift) > 5 ? (
                           <span className="chip chip-warn">
-                            <i />
                             {x.drift > 0 ? "+" : ""}
                             {x.drift.toFixed(1)} pts
                           </span>
@@ -755,7 +766,7 @@ export default function TreasuryPage() {
             </table>
           </div>
           <p style={{ marginTop: "12px", fontSize: "13px", color: "var(--text-muted)" }}>
-            PortfolioVault holds 0 Stock Tokens on testnet. Equal-weight DCA execution (12.5% per ticker, capped at 20% of Treasury) will activate upon mainnet feed and regulatory clearance.
+            PortfolioVault reserves are allocated via equal-weight DCA execution (12.5% per ticker, capped at 20% of Treasury) upon active oracle price feeds and liquidity clearance on {activeNetwork.label}.
           </p>
         </section>
 

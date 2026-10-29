@@ -31,7 +31,7 @@ export function Footer() {
           <div className="foot-row">
             <a
               className="icon-btn"
-              href="https://x.com/TYRIAN_HANDLE"
+              href="https://x.com/tyrian_handle"
               target="_blank"
               rel="noopener noreferrer"
               aria-label="Tyrian on X"

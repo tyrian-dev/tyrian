@@ -298,28 +298,45 @@ export class OpenRouterService {
       throw new Error("OPENROUTER_MGMT_KEY is not configured; cannot issue a sub-key.");
     }
 
-    const res = await fetch("https://openrouter.ai/api/v1/keys", {
+    const numericLimit = Number(dailyLimitUsd) || 0;
+    const requestPayload: Record<string, unknown> = {
+      name: `tyrian_${userAddress.toLowerCase()}`,
+    };
+
+    // OpenRouter Management API rejects limit <= 0 with 400 Bad Request.
+    // If the user quota is 0 (unfunded/pre-epoch), omit the limit parameter;
+    // the Tyrian Gateway strictly enforces local zero-quota checks (402).
+    if (numericLimit > 0) {
+      requestPayload.limit = numericLimit;
+      requestPayload.limit_reset = "daily";
+    }
+
+    const res = await this.fetchImpl("https://openrouter.ai/api/v1/keys", {
       method: "POST",
       headers: {
         Authorization: `Bearer ${this.mgmtKey}`,
         "Content-Type": "application/json",
       },
-      body: JSON.stringify({
-        name: `tyrian_${userAddress.toLowerCase()}`,
-        limit: dailyLimitUsd,
-        limit_reset: "daily",
-      }),
+      body: JSON.stringify(requestPayload),
     });
 
     if (!res.ok) {
-      throw new Error(`OpenRouter Management API error: ${res.statusText}`);
+      const errText = await res.text().catch(() => "");
+      throw new Error(`OpenRouter Management API error: ${res.status} ${res.statusText} - ${errText}`);
     }
 
-    const data = (await res.json()) as { key: string };
-    if (!data.key) {
-      throw new Error("OpenRouter Management API returned no sub-key.");
+    const data = (await res.json().catch(() => ({}))) as Record<string, any>;
+    const subKey =
+      typeof data.key === "string"
+        ? data.key
+        : typeof data.data?.key === "string"
+          ? data.data.key
+          : undefined;
+
+    if (!subKey) {
+      throw new Error(`OpenRouter Management API returned no sub-key. Response: ${JSON.stringify(data)}`);
     }
-    return data.key;
+    return subKey;
   }
 
   /**
@@ -352,7 +369,7 @@ export class OpenRouterService {
         JSON.stringify({
           error: {
             message:
-              "No provider key is available for this request. Create a new Tyrian API key or retry after the provider credentials are restored.",
+              "AI Gateway provider key is currently unconfigured. Please notify protocol administrator.",
             type: "provider_key_unavailable",
             code: "provider_key_unavailable",
           },
@@ -370,16 +387,69 @@ export class OpenRouterService {
       },
     };
 
-    const res = await this.fetchImpl("https://openrouter.ai/api/v1/chat/completions", {
-      method: "POST",
-      headers: {
-        Authorization: `Bearer ${providerKey}`,
-        "Content-Type": "application/json",
-        "HTTP-Referer": "https://tyrian.app",
-        "X-Title": "Tyrian AI Gateway",
-      },
-      body: JSON.stringify(finalPayload),
-    });
+    let res: Response;
+    try {
+      res = await this.fetchImpl("https://openrouter.ai/api/v1/chat/completions", {
+        method: "POST",
+        headers: {
+          Authorization: `Bearer ${providerKey}`,
+          "Content-Type": "application/json",
+          "HTTP-Referer": "https://tyrian.app",
+          "X-Title": "Tyrian AI Gateway",
+        },
+        body: JSON.stringify(finalPayload),
+      });
+    } catch (err: any) {
+      return new Response(
+        JSON.stringify({
+          error: {
+            message: `Failed to connect to upstream AI provider: ${err?.message || "network error"}.`,
+            type: "upstream_connect_error",
+            code: "upstream_connect_error",
+          },
+        }),
+        { status: 502, headers: { "Content-Type": "application/json" } },
+      );
+    }
+
+    if (!res.ok) {
+      if (res.status === 401) {
+        return new Response(
+          JSON.stringify({
+            error: {
+              message: "Upstream AI provider authentication failed. Provider credentials need renewal or are invalid.",
+              type: "provider_auth_failed",
+              code: "provider_auth_failed",
+            },
+          }),
+          { status: 502, headers: { "Content-Type": "application/json" } },
+        );
+      }
+      if (res.status === 402) {
+        return new Response(
+          JSON.stringify({
+            error: {
+              message: "Upstream AI provider credit balance is exhausted. Protocol treasury refill is pending.",
+              type: "provider_credits_exhausted",
+              code: "provider_credits_exhausted",
+            },
+          }),
+          { status: 503, headers: { "Content-Type": "application/json" } },
+        );
+      }
+      if (res.status === 429) {
+        return new Response(
+          JSON.stringify({
+            error: {
+              message: "Upstream AI provider is temporarily busy or rate-limited. Please wait a few seconds and try again.",
+              type: "provider_rate_limited",
+              code: "provider_rate_limited",
+            },
+          }),
+          { status: 429, headers: { "Content-Type": "application/json" } },
+        );
+      }
+    }
 
     return res;
   }

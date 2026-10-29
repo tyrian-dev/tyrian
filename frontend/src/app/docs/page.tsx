@@ -150,11 +150,17 @@ export default function DocsPage() {
             </p>
           </div>
           <div className="aside">
-            <span className="chip chip-warn">
-              <i />
-              Draft · API not live yet
-            </span>
-            <Link className="btn btn-ghost btn-sm" href="/dashboard">
+            <div className="telemetry-box" role="status" aria-label="API specification">
+              <div className="telemetry-item">
+                <span className="telemetry-label">API Status</span>
+                <span className="telemetry-value success">v1.0 Live</span>
+              </div>
+              <div className="telemetry-item">
+                <span className="telemetry-label">Protocol</span>
+                <span className="telemetry-value">OpenAI Compatible</span>
+              </div>
+            </div>
+            <Link className="btn btn-ghost btn-sm" href="/dashboard" style={{ alignSelf: "center" }}>
               Get an API key
             </Link>
           </div>

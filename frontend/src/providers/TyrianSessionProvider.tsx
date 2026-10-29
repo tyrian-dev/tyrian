@@ -6,6 +6,7 @@ import {
   useContext,
   useEffect,
   useMemo,
+  useRef,
   useState,
   type ReactNode,
 } from "react";
@@ -17,6 +18,7 @@ import {
   readProviderChainId,
   syncConnectionChain,
 } from "@/lib/wallet/providerChain";
+import { formatWalletError } from "@/lib/wallet/errors";
 
 interface TyrianSessionContextValue {
   authenticated: boolean;
@@ -47,19 +49,22 @@ export function TyrianSessionProvider({ children }: { children: ReactNode }) {
   // useChainId() reports the config's selected chain, which stays on the target
   // even when the connected wallet is on an unsupported network. The account
   // chain is the actual wallet chain and must drive SIWE + session binding.
-  const { address, chainId, connector } = useAccount();
+  const { address, chainId, connector, status } = useAccount();
   const config = useConfig();
   const { signMessageAsync } = useSignMessage();
   const { disconnectAsync } = useDisconnect();
 
   const [sessionAddress, setSessionAddress] = useState<string | null>(null);
   const [sessionChainId, setSessionChainId] = useState<number | null>(null);
-  const [loading, setLoading] = useState(true);
+  const [fetchLoading, setFetchLoading] = useState(true);
+  const isWalletReconnecting = status === "reconnecting";
+  const loading = fetchLoading || isWalletReconnecting;
   const [signingIn, setSigningIn] = useState(false);
+  const signingInRef = useRef(false);
   const [error, setError] = useState("");
 
   const refresh = useCallback(async () => {
-    setLoading(true);
+    setFetchLoading(true);
     try {
       const response = await fetch("/api/auth/me", {
         cache: "no-store",
@@ -85,7 +90,7 @@ export function TyrianSessionProvider({ children }: { children: ReactNode }) {
       setSessionAddress(null);
       setSessionChainId(null);
     } finally {
-      setLoading(false);
+      setFetchLoading(false);
     }
   }, []);
 
@@ -117,12 +122,12 @@ export function TyrianSessionProvider({ children }: { children: ReactNode }) {
     if (!address || !sessionAddress) return;
     if (address.toLowerCase() !== sessionAddress.toLowerCase()) return;
 
-    if (!isTargetChain(chainId)) {
+    if (chainId !== undefined && !isTargetChain(chainId)) {
       setError(`Switch to ${TARGET_CHAIN.name} before signing in.`);
       return;
     }
 
-    if (sessionChainId !== null && chainId !== sessionChainId) {
+    if (sessionChainId !== null && chainId !== undefined && chainId !== sessionChainId) {
       setError("Network changed. Sign in again on this network.");
       return;
     }
@@ -144,8 +149,9 @@ export function TyrianSessionProvider({ children }: { children: ReactNode }) {
       setError("Reconnect your wallet, then try again.");
       return false;
     }
-    if (signingIn) return false;
+    if (signingInRef.current || signingIn) return false;
 
+    signingInRef.current = true;
     setSigningIn(true);
     setError("");
 
@@ -211,13 +217,12 @@ export function TyrianSessionProvider({ children }: { children: ReactNode }) {
       setError("");
       return true;
     } catch (err) {
-      const message =
-        err instanceof Error && err.message
-          ? err.message
-          : "Sign-in failed. Please try again.";
-      setError(message);
+      const cleanMsg = formatWalletError(err, "Sign-in failed. Please try again.");
+      // If user intentionally rejected the signature in wallet, cleanMsg is null (reset cleanly)
+      setError(cleanMsg || "");
       return false;
     } finally {
+      signingInRef.current = false;
       setSigningIn(false);
     }
   }, [address, chainId, config, connector, signMessageAsync, signingIn]);

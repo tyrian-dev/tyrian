@@ -106,7 +106,7 @@
 .page-home .stack-card h3{font-size:clamp(24px,3vw,34px);margin-bottom:12px}
 .page-home .stack-card p{color:var(--text-muted);max-width:44ch}
 .page-home .stack-card .chips{display:flex;flex-wrap:wrap;gap:8px}
-.page-home .chip{font:500 12px/1 "JetBrains Mono";padding:8px 10px;border-radius:999px;background:rgba(234,182,208,.08);border:1px solid var(--border);color:var(--tyr-200)}
+.page-home .chip{font:500 12px/1 "JetBrains Mono";padding:6px 10px;border-radius:6px;background:rgba(234,182,208,.08);border:1px solid var(--border);color:var(--tyr-200)}
 [data-theme="light"] .page-home .chip{color:var(--tyr-600);background:var(--tyr-100)}
 .page-home .stack-card .vis{position:relative;border-left:1px solid var(--border);background:var(--tyr-800);display:grid;place-items:center;overflow:hidden}
 [data-theme="light"] .page-home .stack-card .vis{background:var(--tyr-100)}
@@ -126,7 +126,10 @@
 .page-home .tilt:hover .shine{opacity:1}
 .page-home .asset-card .tk{font:600 44px/1 "Inter Tight";letter-spacing:-.02em;transform:translateZ(40px)}
 .page-home .asset-card .co{color:var(--text-muted);font-size:14px;margin-top:6px}
-.page-home .asset-card .glyph{position:absolute;right:-30px;top:-30px;width:170px;height:170px;opacity:.18;transform:translateZ(10px)}
+.page-home .asset-card .glyph{position:absolute;right:-30px;top:-30px;width:170px;height:170px;opacity:.08;transform:translateZ(10px);pointer-events:none}
+.page-home .asset-card .asset-header{display:flex;justify-content:space-between;align-items:flex-start;gap:14px;position:relative;z-index:2;transform:translateZ(40px)}
+.page-home .asset-card .asset-header-text{flex:1;min-width:0}
+.page-home .tilt:hover .token-emblem{transform:translateY(-1px);border-color:rgba(201,162,74,.4)}
 .page-home .asset-card .rows{font:400 11.5px/1.7 "JetBrains Mono";color:var(--text-muted);transform:translateZ(24px)}
 .page-home .asset-card .rows b{color:var(--tyr-200);font-weight:500}
 [data-theme="light"] .page-home .asset-card .rows b{color:var(--tyr-600)}
@@ -162,7 +165,7 @@
 .page-home .meter .big{font:500 clamp(36px,5vw,52px)/1 "JetBrains Mono";color:var(--gold-500)}
 [data-theme="light"] .page-home .meter .big{color:var(--tyr-600)}
 .page-home .meter .sub{font:400 12px "JetBrains Mono";color:var(--text-muted);letter-spacing:.06em}
-.page-home .boost-badge{display:inline-flex;gap:8px;align-items:center;padding:8px 14px;border-radius:999px;border:1px solid rgba(201,162,74,.4);font:500 13px "JetBrains Mono";color:var(--gold-500)}
+.page-home .boost-badge{display:inline-flex;gap:8px;align-items:center;padding:6px 12px;border-radius:8px;border:1px solid rgba(201,162,74,.4);font:500 12.5px "JetBrains Mono";color:var(--gold-500)}
 .page-home .chip-warn{background:rgba(217,162,59,.12);border:1px solid rgba(217,162,59,.4);color:var(--warning)}
 @media (max-width:860px){
 .page-home .quota-grid{grid-template-columns:1fr}
