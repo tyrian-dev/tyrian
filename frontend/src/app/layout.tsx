@@ -16,18 +16,18 @@ export const metadata: Metadata = {
   },
   title: "Tyrian · Once only for emperors",
   description:
-    "Tyrian ($TYR): stake assets, use every AI model. Inference is funded by staked-asset yield and $TYR creator fees on Robinhood Chain.",
+    "Tyrian ($TYRN): stake assets, use every AI model. Inference is funded by staked-asset yield and $TYRN creator fees on Robinhood Chain.",
   openGraph: {
     title: "Tyrian · Once only for emperors",
     description:
-      "Stake assets, use every AI model. Inference is paid by staked-asset yield and $TYR creator fees on Robinhood Chain.",
+      "Stake assets, use every AI model. Inference is paid by staked-asset yield and $TYRN creator fees on Robinhood Chain.",
     images: [{ url: "/og-image.png", width: 1200, height: 630, alt: "Tyrian" }],
   },
   twitter: {
     card: "summary_large_image",
     title: "Tyrian · Once only for emperors",
     description:
-      "Stake assets, use every AI model. Inference is paid by staked-asset yield and $TYR creator fees on Robinhood Chain.",
+      "Stake assets, use every AI model. Inference is paid by staked-asset yield and $TYRN creator fees on Robinhood Chain.",
     images: [{ url: "/og-image.png", width: 1200, height: 630, alt: "Tyrian" }],
   },
   icons: {

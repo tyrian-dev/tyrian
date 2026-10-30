@@ -80,7 +80,7 @@ library MainnetGuards {
         }
 
         requireManifestMatch(config.usdg, config.manifestUsdg, "tokens.USDG.address");
-        requireManifestMatch(config.tyr, config.manifestTyr, "tokens.TYR.address");
+        requireManifestMatch(config.tyr, config.manifestTyr, "tokens.TYRN.address");
         requireManifestMatch(config.weth, config.manifestWeth, "tokens.WETH.address");
         requireManifestMatch(config.treasury, config.manifestTreasury, "external.treasurySafe");
         requireManifestMatch(config.guardian, config.manifestGuardian, "external.guardian");

@@ -92,12 +92,12 @@ export class ReconciliationService {
       });
     }
 
-    // TYR
-    if (tyrianNetwork.tokens.TYR.address && tyrianNetwork.contracts.UsdgVault) {
-      // TYR has config in StakeManager if enabled
+    // TYRN
+    if (tyrianNetwork.tokens.TYRN.address && tyrianNetwork.contracts.UsdgVault) {
+      // TYRN has config in StakeManager if enabled
       assetsToCheck.push({
-        symbol: "TYR",
-        address: tyrianNetwork.tokens.TYR.address,
+        symbol: "TYRN",
+        address: tyrianNetwork.tokens.TYRN.address,
         vault: tyrianNetwork.contracts.UsdgVault,
       });
     }
@@ -236,8 +236,8 @@ export class ReconciliationService {
       const addr = raw.assetAddress.toLowerCase();
       if (addr === tyrianNetwork.tokens.USDG.address?.toLowerCase()) {
         symbol = "USDG";
-      } else if (addr === tyrianNetwork.tokens.TYR.address?.toLowerCase()) {
-        symbol = "TYR";
+      } else if (addr === tyrianNetwork.tokens.TYRN.address?.toLowerCase()) {
+        symbol = "TYRN";
       } else {
         for (const [stkSymbol, cfg] of Object.entries(tyrianNetwork.stocks)) {
           if (cfg.address?.toLowerCase() === addr) {

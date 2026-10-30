@@ -57,7 +57,7 @@ contract ForkRobinhoodTestnetTest is Test {
         portfolioVaultAddr = TreasuryManifest.readAddress(vm, json, ".contracts.PortfolioVault");
 
         usdgAddr = TreasuryManifest.readAddress(vm, json, ".tokens.USDG.address");
-        tyrAddr = TreasuryManifest.readAddress(vm, json, ".tokens.TYR.address");
+        tyrAddr = TreasuryManifest.readAddress(vm, json, ".tokens.TYRN.address");
         wethAddr = TreasuryManifest.readAddress(vm, json, ".tokens.WETH.address");
     }
 
@@ -87,7 +87,7 @@ contract ForkRobinhoodTestnetTest is Test {
         assertEq(IERC20Metadata(usdgAddr).symbol(), "USDG");
         assertEq(IERC20Metadata(usdgAddr).decimals(), 18);
 
-        assertEq(IERC20Metadata(tyrAddr).symbol(), "TYR");
+        assertEq(IERC20Metadata(tyrAddr).symbol(), "TYRN");
         assertEq(IERC20Metadata(tyrAddr).decimals(), 18);
 
         assertEq(IERC20Metadata(wethAddr).symbol(), "WETH");

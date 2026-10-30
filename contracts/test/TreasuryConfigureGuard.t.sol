@@ -322,7 +322,7 @@ contract TreasuryConfigureGuardTest is Test {
 
         ConfigureTreasuryScript script = new ConfigureTreasuryScript();
         vm.expectRevert(
-            abi.encodeWithSelector(MainnetGuards.ManifestAddressMissing.selector, "contracts.TreasuryRouter")
+            abi.encodeWithSelector(MainnetGuards.ManifestAddressMismatch.selector, "contracts.TreasuryRouter")
         );
         script.run();
     }

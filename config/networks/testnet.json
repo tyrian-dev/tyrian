@@ -14,7 +14,7 @@
     "BuybackBurner": "0x32445e552f14c3216f331a39e7dd50a11e021fe0",
     "TreasuryRouter": "0x7557578f82b833ae77458a6e7bb7e659b5e91688",
     "PortfolioVault": "0xa8039ac65c40da7deda84064fe788a9c8b8752e1",
-    "TyrTwapOracle": "0x330a226eff5a7dd9bd395a2d995b48e175ebb500"
+    "TyrTwapOracle": null
   },
   "tokens": {
     "USDG": {
@@ -22,9 +22,9 @@
       "address": "0xa1e6557c578c2422bee44069cdb82710a8906c62",
       "decimals": 18
     },
-    "TYR": {
-      "symbol": "TYR",
-      "address": "0xe0ee5fe8e29db7e20792bce6f9a8bc3c4bc95617",
+    "TYRN": {
+      "symbol": "TYRN",
+      "address": null,
       "decimals": 18
     },
     "WETH": {
@@ -123,7 +123,7 @@
     "guardian": null,
     "dexRouter": null,
     "morphoMarket": null,
-    "uniswapPool": "0x9d2eec989e50e58619376d7240f65f5a87532f78",
+    "uniswapPool": null,
     "ponsFeeWallet": null
   },
   "features": {

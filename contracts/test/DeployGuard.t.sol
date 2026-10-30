@@ -168,9 +168,9 @@ contract DeployGuardTest is Test {
     function test_MainnetManifestNullAddressIsNotParseable() public view {
         string memory json = vm.readFile("../config/networks/mainnet.json");
 
-        assertTrue(vm.keyExistsJson(json, ".tokens.USDG.address"));
+        assertTrue(vm.keyExistsJson(json, ".tokens.TYRN.address"));
         (bool ok,) = address(vm)
-            .staticcall(abi.encodeWithSignature("parseJsonAddress(string,string)", json, ".tokens.USDG.address"));
+            .staticcall(abi.encodeWithSignature("parseJsonAddress(string,string)", json, ".tokens.TYRN.address"));
         assertFalse(ok);
     }
 
@@ -190,16 +190,29 @@ contract DeployGuardTest is Test {
     /// while the mainnet manifest still has null token addresses.
     function test_DeployProtocolStopsOnUnconfiguredManifest() public {
         vm.chainId(MainnetGuards.ROBINHOOD_MAINNET_CHAIN_ID);
+        address manifestTreasury = 0x56e335892745ed42228525BF74da8755924Ad740;
+        address manifestGuardian = 0xF186099CEa81E01A3Bd71a92b830b8bEB50d9E00;
+        address manifestUsdg = 0x5fc5360D0400a0Fd4f2af552ADD042D716F1d168;
+        address manifestWeth = 0x0Bd7D308f8E1639FAb988df18A8011f41EAcAD73;
+        address manifestOwner = 0xF186099CEa81E01A3Bd71a92b830b8bEB50d9E00;
+
+        vm.etch(manifestTreasury, hex"01");
+        vm.etch(manifestGuardian, hex"01");
+        vm.etch(manifestUsdg, hex"01");
+        vm.etch(manifestWeth, hex"01");
+        vm.etch(manifestOwner, hex"01");
+
         vm.setEnv("DEPLOYER_PRIVATE_KEY", "0x1234");
-        vm.setEnv("TREASURY_SAFE", vm.toString(treasury));
-        vm.setEnv("GUARDIAN", vm.toString(guardian));
-        vm.setEnv("USDG_ADDRESS", vm.toString(address(usdg)));
+        vm.setEnv("TREASURY_SAFE", vm.toString(manifestTreasury));
+        vm.setEnv("GUARDIAN", vm.toString(manifestGuardian));
+        vm.setEnv("USDG_ADDRESS", vm.toString(manifestUsdg));
+        vm.setEnv("TYRN_ADDRESS", vm.toString(address(tyr)));
         vm.setEnv("TYR_ADDRESS", vm.toString(address(tyr)));
-        vm.setEnv("WETH_ADDRESS", vm.toString(address(weth)));
-        vm.setEnv("PROTOCOL_OWNER", vm.toString(owner));
+        vm.setEnv("WETH_ADDRESS", vm.toString(manifestWeth));
+        vm.setEnv("PROTOCOL_OWNER", vm.toString(manifestOwner));
 
         DeployProtocolScript script = new DeployProtocolScript();
-        vm.expectRevert(abi.encodeWithSelector(MainnetGuards.ManifestAddressMissing.selector, "tokens.USDG.address"));
+        vm.expectRevert(abi.encodeWithSelector(MainnetGuards.ManifestAddressMissing.selector, "tokens.TYRN.address"));
         script.run();
     }
 

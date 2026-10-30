@@ -317,7 +317,7 @@ export class IndexerService {
       const client = this.getPublicClient();
       const assetsToCheck: string[] = [];
       if (tyrianNetwork.tokens.USDG.address) assetsToCheck.push(tyrianNetwork.tokens.USDG.address);
-      if (tyrianNetwork.tokens.TYR.address) assetsToCheck.push(tyrianNetwork.tokens.TYR.address);
+      if (tyrianNetwork.tokens.TYRN.address) assetsToCheck.push(tyrianNetwork.tokens.TYRN.address);
 
       const items: StakePositionItem[] = [];
       for (const asset of assetsToCheck) {

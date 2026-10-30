@@ -17,10 +17,10 @@ export function CaBadge({
   showNetwork = true,
 }: CaBadgeProps) {
   // Address from network manifest; fallback to mainnet manifest address if available
-  const canonicalMainnetAddress = networkManifests.mainnet.tokens.TYR?.address ?? null;
+  const canonicalMainnetAddress = networkManifests.mainnet.tokens.TYRN?.address ?? null;
   const rawAddress = (activeNetwork.name === "mainnet"
-    ? activeNetwork.tokens.TYR?.address
-    : canonicalMainnetAddress) ?? activeNetwork.tokens.TYR?.address ?? null;
+    ? activeNetwork.tokens.TYRN?.address
+    : canonicalMainnetAddress) ?? activeNetwork.tokens.TYRN?.address ?? null;
 
   const explorerUrl =
     (activeNetwork.name === "mainnet" ? activeNetwork.explorer : networkManifests.mainnet.explorer) ||
@@ -31,8 +31,8 @@ export function CaBadge({
   const defaultIsTba = (() => {
     if (status === "tba") return true;
     if (status === "live") return false;
-    if (process.env.NEXT_PUBLIC_TYR_CA_STATUS === "tba") return true;
-    if (process.env.NEXT_PUBLIC_TYR_CA_STATUS === "live") return false;
+    if (process.env.NEXT_PUBLIC_TYRN_CA_STATUS === "tba" || process.env.NEXT_PUBLIC_TYR_CA_STATUS === "tba") return true;
+    if (process.env.NEXT_PUBLIC_TYRN_CA_STATUS === "live" || process.env.NEXT_PUBLIC_TYR_CA_STATUS === "live") return false;
     // For "auto": if a valid token address is configured in manifest -> live, otherwise TBA
     return !isAddress(rawAddress);
   })();
@@ -57,12 +57,12 @@ export function CaBadge({
     }
   }, [rawAddress]);
 
-  const activeAddress = rawAddress || "0xe7a401dc74196ed5aeb96f24f7ac5c02e1b793d7";
-  const displayAddress = `${activeAddress.slice(0, 6)}…${activeAddress.slice(-4)}`;
+  const activeAddress = rawAddress || "";
+  const displayAddress = activeAddress ? `${activeAddress.slice(0, 6)}…${activeAddress.slice(-4)}` : "TBA";
 
   const handleCopy = useCallback(async () => {
-    if (isTba) {
-      setTooltip("Official $TYR CA is TBA · Beware of scams!");
+    if (isTba || !activeAddress) {
+      setTooltip("Official $TYRN CA is TBA · Beware of scams!");
       setTimeout(() => setTooltip(null), 2400);
       return;
     }
@@ -85,7 +85,7 @@ export function CaBadge({
     <div
       className={`tyr-ca-badge ${isTba ? "is-tba" : "is-live"} ${className}`}
       role="group"
-      aria-label="Official $TYR contract information"
+      aria-label="Official $TYRN contract information"
     >
       {/* Tooltip notice */}
       {tooltip && (
@@ -102,7 +102,7 @@ export function CaBadge({
       />
 
       {/* Label */}
-      <span className="tyr-ca-label">$TYR CA:</span>
+      <span className="tyr-ca-label">$TYRN CA:</span>
 
       {/* Value */}
       {isTba ? (

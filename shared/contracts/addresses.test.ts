@@ -51,7 +51,7 @@ function readyMainnet(): NetworkManifest {
   ] as const) {
     manifest.contracts[name] = uniqueAddress();
   }
-  for (const name of ["USDG", "TYR", "WETH"] as const) {
+  for (const name of ["USDG", "TYRN", "WETH"] as const) {
     manifest.tokens[name].address = uniqueAddress();
   }
   manifest.external.treasurySafe = uniqueAddress();

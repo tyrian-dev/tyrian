@@ -157,14 +157,14 @@ contract TreasuryDeployGuardTest is Test {
         harness.validateTreasury(config);
     }
 
-    /// @dev The real script stops before broadcast while the mainnet manifest is
-    /// still unconfigured. USDG is checked first, matching DeployProtocol.
+    /// @dev The real script stops before broadcast while the mainnet manifest
+    /// does not match the deployed contracts.
     function test_ScriptStopsOnUnconfiguredMainnetManifest() public {
         vm.chainId(MainnetGuards.ROBINHOOD_MAINNET_CHAIN_ID);
         _setEnv(address(usdg), address(weth));
 
         DeployTreasuryScript script = new DeployTreasuryScript();
-        vm.expectRevert(abi.encodeWithSelector(MainnetGuards.ManifestAddressMissing.selector, "tokens.USDG.address"));
+        vm.expectRevert(abi.encodeWithSelector(MainnetGuards.ManifestAddressMismatch.selector, "tokens.USDG.address"));
         script.run();
     }
 

@@ -120,7 +120,7 @@ function assertManifestPrerequisites() {
   }
 
   const missing: string[] = [];
-  for (const token of ["USDG", "TYR", "WETH"] as const) {
+  for (const token of ["USDG", "TYRN", "WETH"] as const) {
     if (!manifest.tokens[token]?.address) missing.push(`tokens.${token}.address`);
   }
   for (const field of [
@@ -339,7 +339,8 @@ function baseEnv(artifact: DeploymentArtifact): Record<string, string> {
     GUARDIAN: manifest.external.guardian ?? "",
     DEX_ROUTER: manifest.external.dexRouter ?? "",
     USDG_ADDRESS: manifest.tokens.USDG.address ?? "",
-    TYR_ADDRESS: manifest.tokens.TYR.address ?? "",
+    TYRN_ADDRESS: manifest.tokens.TYRN.address ?? "",
+    TYR_ADDRESS: manifest.tokens.TYRN.address ?? "",
     WETH_ADDRESS: manifest.tokens.WETH.address ?? "",
   };
 

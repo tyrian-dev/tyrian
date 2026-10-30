@@ -17,6 +17,11 @@ interface TokenConfig {
 }
 
 const TOKEN_CONFIG: Record<string, TokenConfig> = {
+  TYRN: {
+    src: "/tokens/tyr.png",
+    scale: 0.76,
+    isCustomBadge: true,
+  },
   TYR: {
     src: "/tokens/tyr.png",
     scale: 0.76,
@@ -65,7 +70,7 @@ export function TokenLogo({ symbol, size = 40, className = "", variant = "top-ri
   const cleanSymbol = symbol.replace(/^\$/, "").toUpperCase();
   const config = TOKEN_CONFIG[cleanSymbol];
 
-  const isTyr = cleanSymbol === "TYR";
+  const isTyr = cleanSymbol === "TYRN" || cleanSymbol === "TYR";
 
   // Obsidian glass disc with subtle hairline highlight, adhering strictly to Tyrian brand tokens
   const containerStyle: React.CSSProperties = {

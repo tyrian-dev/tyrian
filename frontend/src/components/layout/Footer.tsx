@@ -18,7 +18,7 @@ export function Footer() {
             TYRIAN
           </Link>
           <p style={{ marginTop: "12px" }}>
-            Stake assets, use every AI model. $TYR launches on{" "}
+            Stake assets, use every AI model. $TYRN launches on{" "}
             <a href="https://docs.ponsfamily.com/" target="_blank" rel="noopener noreferrer">
               pons
             </a>
@@ -26,7 +26,7 @@ export function Footer() {
           </p>
           <div className="foot-ca-section">
             <span className="foot-ca-label">Official Token Contract</span>
-            <CaBadge variant="footer" status="live" />
+            <CaBadge variant="footer" status="auto" />
           </div>
           <div className="foot-row">
             <a
@@ -46,7 +46,7 @@ export function Footer() {
           </div>
         </div>
         <p className="legal">
-          $TYR is a utility access token, not an investment. Quota is not fixed and depends on yield and fees. Stock
+          $TYRN is a utility access token, not an investment. Quota is not fixed and depends on yield and fees. Stock
           Tokens are not available in the US, UK, Canada, Switzerland or UAE. Tyrian is independent and not affiliated
           with Robinhood or pons. Check the official contract address on this site before trading.
         </p>

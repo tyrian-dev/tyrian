@@ -20,11 +20,11 @@ contract DeployMocksScript is Script {
         vm.startBroadcast(privateKey);
 
         MockERC20 usdg = new MockERC20("Robinhood USDG", "USDG", 18);
-        MockERC20 tyr = new MockERC20("Tyrian", "TYR", 18);
+        MockERC20 tyr = new MockERC20("Tyrian", "TYRN", 18);
         MockWETH weth = new MockWETH();
 
         console.log("MockUSDG:", address(usdg));
-        console.log("MockTYR:", address(tyr));
+        console.log("MockTYRN:", address(tyr));
         console.log("MockWETH:", address(weth));
 
         _deployStocks();

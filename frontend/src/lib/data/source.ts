@@ -81,8 +81,8 @@ const liveStakeDataSource: StakeDataSource = {
       if (asset.symbol === "USDG") {
         return { ...asset, addr: activeNetwork.tokens.USDG?.address ?? undefined };
       }
-      if (asset.symbol === "TYR") {
-        return { ...asset, addr: activeNetwork.tokens.TYR?.address ?? undefined };
+      if (asset.symbol === "TYRN" || asset.symbol === "TYR") {
+        return { ...asset, addr: activeNetwork.tokens.TYRN?.address ?? undefined };
       }
       const stock = activeNetwork.stocks?.[asset.symbol];
       if (stock) {

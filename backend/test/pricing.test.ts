@@ -144,7 +144,7 @@ describe("Pricing service (oracle-backed USD values)", () => {
     const service = new PricingService();
     const error = await service.getTyrPriceUsd().catch((err) => err);
     if (error instanceof PriceUnavailableError && error.reason === "oracle_not_configured") {
-      expect(error.symbol).toBe("TYR");
+      expect(["TYRN", "TYR"]).toContain(error.symbol);
     } else {
       // Mainnet-style manifest: the oracle exists, so the read is attempted.
       expect(error).toBeInstanceOf(Error);

@@ -25,7 +25,7 @@ contract DeployTyrOracleScript is Script {
         uint256 privateKey = vm.envUint("DEPLOYER_PRIVATE_KEY");
         address deployer = vm.addr(privateKey);
 
-        address tyr = vm.envOr("TYR_TOKEN", address(0));
+        address tyr = vm.envOr("TYRN_TOKEN", vm.envOr("TYR_TOKEN", address(0)));
         address quoteToken = vm.envOr("QUOTE_TOKEN", address(0));
         address pool = vm.envOr("UNISWAP_POOL", address(0));
         address quoteFeed = vm.envOr("QUOTE_FEED", address(0));
@@ -40,7 +40,7 @@ contract DeployTyrOracleScript is Script {
             string memory json = vm.readFile(string.concat(vm.projectRoot(), "/../config/networks/", network, ".json"));
 
             if (tyr == address(0)) {
-                tyr = TreasuryManifest.readAddress(vm, json, ".tokens.TYR.address");
+                tyr = TreasuryManifest.readAddress(vm, json, ".tokens.TYRN.address");
             }
             if (quoteToken == address(0)) {
                 quoteToken = TreasuryManifest.readAddress(vm, json, ".tokens.WETH.address");

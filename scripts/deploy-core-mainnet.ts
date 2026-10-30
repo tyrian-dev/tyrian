@@ -85,7 +85,7 @@ console.log(`Deployer EOA  : ${deployerAddress}`);
 console.log(`Timelock Owner: ${manifest.external.timelock}`);
 console.log(`Treasury Safe : ${manifest.external.treasurySafe}`);
 console.log(`USDG Token    : ${manifest.tokens.USDG.address}`);
-console.log(`TYR Token     : ${manifest.tokens.TYR.address}`);
+console.log(`TYRN Token    : ${manifest.tokens.TYRN.address}`);
 console.log(`WETH Token    : ${manifest.tokens.WETH.address}`);
 console.log(`Execution Mode: ${isBroadcast ? "🚀 BROADCAST (REAL MAINNET TX)" : "🧪 DRY-RUN (SIMULATION ONLY)"}`);
 console.log("========================================================\n");
@@ -110,7 +110,8 @@ const baseEnv = {
   GUARDIAN: manifest.external.guardian,
   DEX_ROUTER: manifest.external.dexRouter,
   USDG_ADDRESS: manifest.tokens.USDG.address,
-  TYR_ADDRESS: manifest.tokens.TYR.address,
+  TYRN_ADDRESS: manifest.tokens.TYRN.address,
+  TYR_ADDRESS: manifest.tokens.TYRN.address,
   WETH_ADDRESS: manifest.tokens.WETH.address,
   EXPECTED_CHAIN_ID: String(chainId),
 };

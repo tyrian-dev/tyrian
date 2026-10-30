@@ -71,7 +71,7 @@ export interface EpochRunSummary {
 function resolveAssetSymbol(assetAddress: string): string {
   const addr = assetAddress.toLowerCase();
   if (addr === tyrianNetwork.tokens.USDG.address?.toLowerCase()) return "USDG";
-  if (addr === tyrianNetwork.tokens.TYR.address?.toLowerCase()) return "TYR";
+  if (addr === tyrianNetwork.tokens.TYRN.address?.toLowerCase()) return "TYRN";
   if (addr === tyrianNetwork.tokens.WETH.address?.toLowerCase()) return "WETH";
 
   for (const [symbol, config] of Object.entries(tyrianNetwork.stocks)) {
@@ -233,11 +233,11 @@ export async function runDailyEpochJob(params?: {
         };
       });
 
-      // Resolve each distinct non-TYR symbol once. Pricing is fail-closed: a
+      // Resolve each distinct non-TYRN symbol once. Pricing is fail-closed: a
       // stale/missing oracle throws before any quota is written.
       const symbols = new Set(
         rows
-          .filter((row) => row.effectiveShares > 0 && row.symbol !== "TYR")
+          .filter((row) => row.effectiveShares > 0 && row.symbol !== "TYRN" && row.symbol !== "TYR")
           .map((row) => row.symbol),
       );
       const prices = new Map<string, number>();
@@ -252,7 +252,7 @@ export async function runDailyEpochJob(params?: {
 
       for (const row of rows) {
         const entry = positionMap.get(row.user) || { usdgValue: 0, stockValue: 0, tyrStakedAmount: 0 };
-        if (row.symbol === "TYR") {
+        if (row.symbol === "TYRN" || row.symbol === "TYR") {
           entry.tyrStakedAmount += row.effectiveShares;
         } else if (row.symbol === "USDG") {
           entry.usdgValue += row.effectiveShares * USDG_USD;
@@ -395,7 +395,7 @@ export async function runDailyEpochJob(params?: {
     if (totalTyrAmount > 0) {
       if (params?.tyrPriceUsd !== undefined) {
         if (!(params.tyrPriceUsd > 0)) {
-          throw new PriceUnavailableError("TYR", "zero_price", "params.tyrPriceUsd");
+          throw new PriceUnavailableError("TYRN", "zero_price", "params.tyrPriceUsd");
         }
         tyrPriceUsd = params.tyrPriceUsd;
       } else {

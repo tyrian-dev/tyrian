@@ -34,7 +34,7 @@ const STOCK_ASSETS = ["AAPL", "NVDA", "MSFT", "GOOGL", "AMZN", "META", "TSLA", "
 
 const ASSETS_LIST = [
   { tk: "USDG", co: "Stablecoin · base quota", a: "Morpho vault", b: "yield → own pool", kind: "base" },
-  { tk: "$TYR", co: "Boost token · fee pool", a: "Uniswap V3 TWAP 30m", b: "boost ≤ 1.5×", kind: "boost" },
+  { tk: "$TYRN", co: "Boost token · fee pool", a: "Uniswap V3 TWAP 30m", b: "boost ≤ 1.5×", kind: "boost" },
   ...STOCK_ASSETS,
 ];
 
@@ -388,7 +388,7 @@ export default function HomePage() {
               for <span className="gold">emperors.</span>
             </h1>
             <p className="lead reveal">
-              Stake assets, use every AI model. You never buy credits. Yield from your stake and $TYR creator fees pay for
+              Stake assets, use every AI model. You never buy credits. Yield from your stake and $TYRN creator fees pay for
               inference.
             </p>
             <div className="hero-ctas reveal">
@@ -525,7 +525,7 @@ export default function HomePage() {
 
               <div className="field">
                 <label htmlFor="tyr">
-                  $TYR staked, USD value <output id="tyrOut">${tyrStake}</output>
+                  $TYRN staked, USD value <output id="tyrOut">${tyrStake}</output>
                 </label>
                 <input
                   id="tyr"
@@ -540,7 +540,7 @@ export default function HomePage() {
 
               <div className="formula">
                 B = yield × <b>0.9</b> (10% → reserve)<br />
-                boost = 1 + 0.5 × min(1, TYR ÷ base) &nbsp;<span className="muted">≤ 1.5×</span><br />
+                boost = 1 + 0.5 × min(1, TYRN ÷ base) &nbsp;<span className="muted">≤ 1.5×</span><br />
                 quota = B × <b>w<sub>i</sub></b> ÷ Σ<b>w</b>
               </div>
             </div>
@@ -614,14 +614,14 @@ export default function HomePage() {
                 <div>
                   <h3>Stake your assets</h3>
                   <p>
-                    Stake USDG or Stock Tokens for base quota, and $TYR to boost it up to 1.5×. Stakes count from the next
+                    Stake USDG or Stock Tokens for base quota, and $TYRN to boost it up to 1.5×. Stakes count from the next
                     epoch; unstake any time with a 7-day cooldown.
                   </p>
                 </div>
                 <div className="chips">
                   <span className="chip">USDG</span>
                   <span className="chip">AAPL · NVDA · MSFT +5</span>
-                  <span className="chip">$TYR boost</span>
+                  <span className="chip">$TYRN boost</span>
                 </div>
               </div>
               <div className="vis">
@@ -647,7 +647,7 @@ export default function HomePage() {
                 <div>
                   <h3>Yield funds the treasury</h3>
                   <p>
-                    Vaults put assets to work and harvest yield to the Treasury. 80% of $TYR creator fees join it. Daily
+                    Vaults put assets to work and harvest yield to the Treasury. 80% of $TYRN creator fees join it. Daily
                     quota never exceeds the treasury&#39;s daily budget, so the system can&#39;t run a deficit.
                   </p>
                 </div>
@@ -760,7 +760,7 @@ export default function HomePage() {
               <h2 style={{ marginTop: "16px" }}>Your stake, your oracle.</h2>
             </div>
             <p>
-              Eight Stock Tokens, USDG and $TYR. Stock Tokens are priced by Chainlink feeds; withdrawals always return the
+              Eight Stock Tokens, USDG and $TYRN. Stock Tokens are priced by Chainlink feeds; withdrawals always return the
               same token you staked.
             </p>
           </div>
@@ -823,14 +823,14 @@ export default function HomePage() {
               </h2>
             </div>
             <p>
-              Every $TYR trade on pons pays a 1% pool fee. Tyrian&#39;s creator share is split by an on-chain FeeSplitter that
+              Every $TYRN trade on pons pays a 1% pool fee. Tyrian&#39;s creator share is split by an on-chain FeeSplitter that
               anyone can call.
             </p>
           </div>
           <div className="flow">
             <div className="flow-step">
               <div className="pct">1%</div>
-              <p>Pool fee on every $TYR trade</p>
+              <p>Pool fee on every $TYRN trade</p>
             </div>
             <div className="flow-step">
               <div className="pct">70%</div>
@@ -856,7 +856,7 @@ export default function HomePage() {
                 <i style={{ background: "var(--tyr-600)" }} />
                 Daily budget
               </h3>
-              <p>Liquid USDG that funds tomorrow&#39;s quota for the $TYR and Stock Token pools.</p>
+              <p>Liquid USDG that funds tomorrow&#39;s quota for the $TYRN and Stock Token pools.</p>
             </div>
             <div>
               <h3>
@@ -883,7 +883,7 @@ export default function HomePage() {
                   step={1}
                   variant="home"
                 />
-                <div className="foot">USDG · Stock Tokens · $TYR</div>
+                <div className="foot">USDG · Stock Tokens · $TYRN</div>
               </div>
               <div className="stat">
                 <div className="label">Daily quota distributed</div>
@@ -896,7 +896,7 @@ export default function HomePage() {
                 <div className="foot">resets 00:00 UTC</div>
               </div>
               <div className="stat">
-                <div className="label">$TYR burned</div>
+                <div className="label">$TYRN burned</div>
                 <Odometer
                   as="div"
                   text={statValue(liveStats.tyrBurned, (v) => v.toLocaleString("en-US"))}
@@ -1011,7 +1011,7 @@ export default function HomePage() {
               <div className="p-card">
                 <div className="shine" />
                 <h3>Real yield first</h3>
-                <p>$TYR boosts. Base quota stands on yield from real assets.</p>
+                <p>$TYRN boosts. Base quota stands on yield from real assets.</p>
               </div>
             </div>
             <div className="tilt">
@@ -1035,7 +1035,7 @@ export default function HomePage() {
                 ~12 weeks. Audit is the gate.
               </h2>
             </div>
-            <p>$TYR launches together with the live product, not before, so fees have a use from the first trade.</p>
+            <p>$TYRN launches together with the live product, not before, so fees have a use from the first trade.</p>
           </div>
           <div className="phases">
             <div className="phase">
@@ -1064,7 +1064,7 @@ export default function HomePage() {
               <ul>
                 <li>Treasury page</li>
                 <li>External audit closed</li>
-                <li>$TYR on pons</li>
+                <li>$TYRN on pons</li>
               </ul>
               <span className="chip gate">gate · audit</span>
             </div>

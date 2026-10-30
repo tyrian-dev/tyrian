@@ -139,7 +139,7 @@ console.log(`   - StockVault    : ${contractsFound.StockVault}`);
 console.log(`   - FeeSplitter   : ${contractsFound.FeeSplitter}`);
 console.log(`   - BuybackBurner : ${contractsFound.BuybackBurner}`);
 console.log(`   - USDG (Mock)   : ${contractsFound.Mock_USDG}`);
-console.log(`   - TYR (Mock)    : ${contractsFound.Mock_TYR}`);
+console.log(`   - TYRN (Mock)   : ${contractsFound.Mock_TYRN || contractsFound.Mock_TYR}`);
 console.log(`   - WETH (Mock)   : ${contractsFound.Mock_WETH}`);
 console.log(`   - TSLA (Mock)   : ${contractsFound.Mock_TSLA}`);
 
@@ -267,7 +267,9 @@ manifest.contracts.TreasuryRouter = contractsFound.TreasuryRouter || manifest.co
 manifest.contracts.PortfolioVault = contractsFound.PortfolioVault || manifest.contracts.PortfolioVault;
 
 if (contractsFound.Mock_USDG) manifest.tokens.USDG.address = contractsFound.Mock_USDG;
-if (contractsFound.Mock_TYR) manifest.tokens.TYR.address = contractsFound.Mock_TYR;
+if (contractsFound.Mock_TYRN || contractsFound.Mock_TYR) {
+  manifest.tokens.TYRN.address = contractsFound.Mock_TYRN || contractsFound.Mock_TYR;
+}
 if (contractsFound.Mock_WETH) manifest.tokens.WETH.address = contractsFound.Mock_WETH;
 
 if (manifest.stocks?.TSLA) {

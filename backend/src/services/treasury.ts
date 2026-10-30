@@ -88,7 +88,7 @@ export class TreasuryService {
     const addr = address.toLowerCase();
     if (addr === tyrianNetwork.tokens.USDG.address?.toLowerCase()) return "USDG";
     if (addr === tyrianNetwork.tokens.WETH.address?.toLowerCase()) return "WETH";
-    if (addr === tyrianNetwork.tokens.TYR.address?.toLowerCase()) return "TYR";
+    if (addr === tyrianNetwork.tokens.TYRN.address?.toLowerCase()) return "TYRN";
 
     for (const [sym, cfg] of Object.entries(tyrianNetwork.stocks)) {
       if (cfg.address && cfg.address.toLowerCase() === addr) return sym;
@@ -109,7 +109,7 @@ export class TreasuryService {
   private portfolioName(symbol: string): string {
     if (symbol === "WETH") return "Wrapped Ether (Portfolio)";
     if (symbol === "USDG") return "Global Dollar Reserve";
-    if (symbol === "TYR") return "Tyrian Token";
+    if (symbol === "TYRN" || symbol === "TYR") return "Tyrian Token ($TYRN)";
     if (symbol === "UNKNOWN") return "Unrecognized Asset";
     return `${symbol} Stock Token`;
   }
@@ -175,11 +175,11 @@ export class TreasuryService {
 
     // 3. Process Burn Events
     for (const b of burns) {
-      const amt = formatUnitsAsset(b.amount, "TYR");
+      const amt = formatUnitsAsset(b.amount, "TYRN");
       totalTyrBurned += amt;
     }
 
-    const tyrPrice = await this.getTokenPrice("TYR");
+    const tyrPrice = await this.getTokenPrice("TYRN");
     const tyrBurnedUsd = Number((totalTyrBurned * tyrPrice).toFixed(4));
 
     const wethPrice = await this.getTokenPrice("WETH");

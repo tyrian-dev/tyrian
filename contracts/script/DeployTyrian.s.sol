@@ -33,7 +33,7 @@ contract DeployTyrianScript is Script {
         vm.startBroadcast(deployerPrivateKey);
 
         MockERC20 mockUsdg = new MockERC20("Robinhood USDG", "USDG", 18);
-        MockERC20 mockTyr = new MockERC20("Tyrian", "TYR", 18);
+        MockERC20 mockTyr = new MockERC20("Tyrian", "TYRN", 18);
         MockWETH mockWeth = new MockWETH();
         MockERC20 mockTsla = new MockERC20("Tesla Tokenized Stock", "TSLA", 18);
         MockAggregatorV3 mockTslaFeed = new MockAggregatorV3(8, 250_00000000);

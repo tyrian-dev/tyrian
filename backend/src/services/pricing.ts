@@ -225,15 +225,20 @@ export class PricingService {
     return price;
   }
 
-  /** USD price of one TYR token. */
-  async getTyrPriceUsd(): Promise<number> {
+  /** USD price of one TYRN token. */
+  async getTyrnPriceUsd(): Promise<number> {
     return this.load(
-      "TYR",
-      "TYR",
+      "TYRN",
+      "TYRN",
       "tyr",
       tyrianNetwork.contracts.TyrTwapOracle,
       "contracts.TyrTwapOracle",
     );
+  }
+
+  /** USD price of one TYR token (alias for TYRN). */
+  async getTyrPriceUsd(): Promise<number> {
+    return this.getTyrnPriceUsd();
   }
 
   /** USD price of one WETH token. */
@@ -269,7 +274,7 @@ export class PricingService {
   async getUsdPrice(symbol: string): Promise<number> {
     const normalized = symbol.toUpperCase();
     if (normalized === "USDG") return USDG_USD;
-    if (normalized === "TYR") return this.getTyrPriceUsd();
+    if (normalized === "TYRN" || normalized === "TYR") return this.getTyrnPriceUsd();
     if (normalized === "WETH") return this.getWethPriceUsd();
     if (tyrianNetwork.stocks[normalized]) {
       return this.getStockPriceUsd(normalized);

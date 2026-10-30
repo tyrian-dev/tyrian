@@ -96,7 +96,7 @@ for (const contract of REQUIRED_CONTRACTS) {
 // Tokens and Safe addresses are verified before deployment, so the artifact
 // only cross-checks them. A mismatch means the deploy ran against a different
 // configuration than the manifest records.
-for (const token of ["USDG", "TYR", "WETH"] as const) {
+for (const token of ["USDG", "TYRN", "WETH"] as const) {
   const fromArtifact = artifact.tokens[token];
   const fromManifest = manifest.tokens[token].address;
   if (fromArtifact && fromManifest && fromArtifact.toLowerCase() !== fromManifest.toLowerCase()) {
@@ -139,7 +139,7 @@ for (const contract of REQUIRED_CONTRACTS) {
 if (artifact.contracts.TyrTwapOracle) {
   next.contracts.TyrTwapOracle = artifact.contracts.TyrTwapOracle;
 }
-for (const token of ["USDG", "TYR", "WETH"] as const) {
+for (const token of ["USDG", "TYRN", "WETH"] as const) {
   next.tokens[token].address = artifact.tokens[token] ?? next.tokens[token].address;
 }
 for (const [ticker, deployed] of Object.entries(artifact.stocks)) {

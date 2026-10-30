@@ -10,6 +10,7 @@ import type {
 
 export const PREVIEW_PRICES: Record<string, number> = {
   USDG: 1,
+  TYRN: 0.0004,
   TYR: 0.0004,
   AAPL: 255,
   NVDA: 185,
@@ -37,8 +38,8 @@ export const PREVIEW_STAKE_POOLS: StakePool[] = [
     source: "preview",
   },
   {
-    id: "tyr",
-    asset: "TYR",
+    id: "tyrn",
+    asset: "TYRN",
     budgetUsd: 211.68,
     totalWeight: 50000000,
     source: "preview",
@@ -48,7 +49,7 @@ export const PREVIEW_STAKE_POOLS: StakePool[] = [
 export const QUOTA_SAMPLE_POSITIONS = [
   { asset: "USDG", amount: 1000 },
   { asset: "NVDA", amount: 10 },
-  { asset: "TYR", amount: 1000000 },
+  { asset: "TYRN", amount: 1000000 },
 ];
 
 function previewTotals() {
@@ -59,7 +60,7 @@ function previewTotals() {
   for (const position of QUOTA_SAMPLE_POSITIONS) {
     const price = PREVIEW_PRICES[position.asset] ?? 0;
     if (position.asset === "USDG") usdgV += position.amount * price;
-    else if (position.asset === "TYR") tyr += position.amount;
+    else if (position.asset === "TYRN" || position.asset === "TYR") tyr += position.amount;
     else stockV += position.amount * price;
   }
 
@@ -108,7 +109,7 @@ export function computePreviewQuota(): PreviewQuota {
       unit: false,
     },
     {
-      name: "$TYR pool",
+      name: "$TYRN pool",
       weight: tyr,
       share: tyr ? tyr / (tyrPool.totalWeight + tyr) : 0,
       B: tyrPool.budgetUsd,
@@ -128,7 +129,7 @@ export const PREVIEW_RESET_SECONDS = 34280;
 
 export const ALL_ASSETS: AssetDef[] = [
   { symbol: "USDG", name: "Global Dollar", type: "base", price: 1.0, pool: "USDG pool" },
-  { symbol: "TYR", name: "Tyrian", type: "boost", price: 0.0004, pool: "$TYR pool" },
+  { symbol: "TYRN", name: "Tyrian", type: "boost", price: 0.0004, pool: "$TYRN pool" },
   { symbol: "AAPL", name: "Apple", type: "stock", price: 255, pool: "Stock pool", addr: "0xaF3D76f1834A1d425780943C99Ea8A608f8a93f9", feed: "0x6B22A786bAa607d76728168703a39Ea9C99f2cD0" },
   { symbol: "NVDA", name: "NVIDIA", type: "stock", price: 185, pool: "Stock pool", addr: "0xd0601CE157Db5bdC3162BbaC2a2C8aF5320D9EEC", feed: "0x379EC4f7C378F34a1B47E4F3cbeBCbAC3E8E9F15" },
   { symbol: "MSFT", name: "Microsoft", type: "stock", price: 520, pool: "Stock pool", addr: "0xe93237C50D904957Cf27E7B1133b510C669c2e74", feed: "0x45C3C877C15E6BA2EBB19eA114Ea508d14C1Af2E" },
@@ -142,7 +143,7 @@ export const ALL_ASSETS: AssetDef[] = [
 export const STAKE_PREVIEW_POSITIONS: UserPosition[] = [
   { id: "p1", asset: "USDG", amount: 1000, valueUsd: 1000, status: "active" },
   { id: "p2", asset: "NVDA", amount: 10, valueUsd: 1850, status: "active" },
-  { id: "p3", asset: "TYR", amount: 15000, valueUsd: 6, status: "active" },
+  { id: "p3", asset: "TYRN", amount: 15000, valueUsd: 6, status: "active" },
 ];
 
 const PREVIEW_USAGE_COSTS = [
@@ -176,6 +177,7 @@ export const PREVIEW_PROVIDER_MIX: ProviderMix[] = [
 
 export const PREVIEW_BALANCES: Record<string, number> = {
   USDG: 5000,
+  TYRN: 2000000,
   TYR: 2000000,
   default: 12,
 };

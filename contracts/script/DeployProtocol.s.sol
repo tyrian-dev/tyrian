@@ -36,7 +36,7 @@ contract DeployProtocolScript is Script {
         address treasury = vm.envAddress("TREASURY_SAFE");
         address guardian = vm.envAddress("GUARDIAN");
         address usdg = vm.envAddress("USDG_ADDRESS");
-        address tyr = vm.envAddress("TYR_ADDRESS");
+        address tyr = vm.envOr("TYRN_ADDRESS", vm.envOr("TYR_ADDRESS", address(0)));
         address weth = vm.envAddress("WETH_ADDRESS");
         address owner = vm.envOr("PROTOCOL_OWNER", deployer);
 
@@ -62,7 +62,7 @@ contract DeployProtocolScript is Script {
             config.manifestTreasury = _manifestAddress(json, ".external.treasurySafe");
             config.manifestGuardian = _manifestAddress(json, ".external.guardian");
             config.manifestUsdg = _manifestAddress(json, ".tokens.USDG.address");
-            config.manifestTyr = _manifestAddress(json, ".tokens.TYR.address");
+            config.manifestTyr = _manifestAddress(json, ".tokens.TYRN.address");
             config.manifestWeth = _manifestAddress(json, ".tokens.WETH.address");
         }
 

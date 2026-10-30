@@ -154,7 +154,7 @@ export default function StakePage() {
         assets.map(async (asset) => {
           let tokenAddr: Address | undefined;
           if (asset.symbol === "USDG") tokenAddr = activeNetwork.tokens.USDG?.address as Address;
-          else if (asset.symbol === "TYR") tokenAddr = activeNetwork.tokens.TYR?.address as Address;
+          else if (asset.symbol === "TYRN" || asset.symbol === "TYR") tokenAddr = activeNetwork.tokens.TYRN?.address as Address;
           else if (activeNetwork.stocks?.[asset.symbol]?.address) {
             tokenAddr = activeNetwork.stocks[asset.symbol].address as Address;
           }
@@ -188,7 +188,7 @@ export default function StakePage() {
   // Resolve token decimals based on active network manifest
   const getAssetDecimals = useCallback((symbol: string): number => {
     if (symbol === "USDG") return activeNetwork.tokens.USDG?.decimals ?? 6;
-    if (symbol === "TYR") return activeNetwork.tokens.TYR?.decimals ?? 18;
+    if (symbol === "TYRN" || symbol === "TYR") return activeNetwork.tokens.TYRN?.decimals ?? 18;
     if (symbol === "WETH") return activeNetwork.tokens.WETH?.decimals ?? 18;
     const stock = activeNetwork.stocks?.[symbol];
     if (stock?.decimals !== undefined) return stock.decimals;
@@ -229,7 +229,7 @@ export default function StakePage() {
 
   const resolveAssetAddress = (symbol: string): Address | null => {
     if (symbol === "USDG") return (activeNetwork.tokens.USDG?.address as Address) || null;
-    if (symbol === "TYR") return (activeNetwork.tokens.TYR?.address as Address) || null;
+    if (symbol === "TYRN" || symbol === "TYR") return (activeNetwork.tokens.TYRN?.address as Address) || null;
     const stock = activeNetwork.stocks?.[symbol];
     if (stock?.address && isAddress(stock.address)) return stock.address as Address;
     return null;
@@ -239,7 +239,7 @@ export default function StakePage() {
     if (symbol === "USDG") {
       return amount.toLocaleString("en-US", { minimumFractionDigits: 2, maximumFractionDigits: 2 });
     }
-    if (symbol === "TYR") {
+    if (symbol === "TYRN" || symbol === "TYR") {
       return amount.toLocaleString("en-US", { maximumFractionDigits: 0 });
     }
     return amount.toLocaleString("en-US", { maximumFractionDigits: 4 });
@@ -263,7 +263,7 @@ export default function StakePage() {
       const activeNum = Number(p.activeShares) / factor;
       const pendingNum = Number(p.pendingShares) / factor;
       const totalNum = activeNum + pendingNum;
-      if (p.asset === "TYR") {
+      if (p.asset === "TYRN" || p.asset === "TYR") {
         tyrStakeCount += totalNum;
         tyrStakeUsd += totalNum * 0.0004;
       } else {
@@ -474,7 +474,7 @@ export default function StakePage() {
             <div className="eyebrow">Stake</div>
             <h1>Stake once, use every model.</h1>
             <p className="lead">
-              USDG and Stock Tokens give you base quota. $TYR adds a boost of up to 1.5×. New stakes count from the next
+              USDG and Stock Tokens give you base quota. $TYRN adds a boost of up to 1.5×. New stakes count from the next
               epoch at 00:00 UTC.
             </p>
           </div>
@@ -525,7 +525,7 @@ export default function StakePage() {
               <div className="foot">USDG + Stock Tokens</div>
             </div>
             <div className="tile">
-              <div className="label">$TYR staked</div>
+              <div className="label">$TYRN staked</div>
               <div className="value" id="sTyr">
                 {tyrStakeCount.toLocaleString("en-US")}
               </div>
@@ -538,7 +538,7 @@ export default function StakePage() {
               <div className="value" id="sBoost">
                 {currentBoost}×
               </div>
-              <div className="foot">1 + 0.5 × min(1, TYR ÷ base)</div>
+              <div className="foot">1 + 0.5 × min(1, TYRN ÷ base)</div>
             </div>
             <div className="tile">
               <div className="label">Estimated quota / day</div>
@@ -587,7 +587,7 @@ export default function StakePage() {
                 aria-pressed={filter === "boost"}
                 onClick={() => setFilter("boost")}
               >
-                $TYR
+                $TYRN
               </button>
             </div>
           </div>
@@ -613,7 +613,7 @@ export default function StakePage() {
                         <TokenLogo symbol={asset.symbol} size={44} />
                         <div style={{ flex: 1, minWidth: 0 }}>
                           <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between", gap: "8px" }}>
-                            <div className="tk">{asset.symbol === "TYR" ? "$TYR" : asset.symbol}</div>
+                            <div className="tk">{asset.symbol === "TYRN" || asset.symbol === "TYR" ? "$TYRN" : asset.symbol}</div>
                             <span className={`chip ${asset.type === "boost" ? "chip-gold" : ""}`}>{asset.pool}</span>
                           </div>
                           <div className="nm">{asset.name}</div>
@@ -683,8 +683,8 @@ export default function StakePage() {
                             : "Connect a wallet to see your balance"}
                       </div>
 
-                      {/* Testnet Faucet Button for USDG and TYR */}
-                      {isConnected && activeNetwork.name === "testnet" && (asset.symbol === "USDG" || asset.symbol === "TYR") && tokenAddr && (
+                      {/* Testnet Faucet Button for USDG and TYRN */}
+                      {isConnected && activeNetwork.name === "testnet" && (asset.symbol === "USDG" || asset.symbol === "TYRN" || asset.symbol === "TYR") && tokenAddr && (
                         <div style={{ marginTop: "4px", marginBottom: "8px", display: "flex", justifyContent: "flex-end" }}>
                           <button
                             type="button"
@@ -954,7 +954,7 @@ export default function StakePage() {
                   style={{ flex: 1, fontSize: "11px", height: "28px" }}
                   onClick={() => {
                     const ratio = parseInt(pct) / 100;
-                    const val = (modalAvailable * ratio).toFixed(modalAsset.symbol === "TYR" ? 0 : 2);
+                    const val = (modalAvailable * ratio).toFixed(modalAsset.symbol === "TYRN" || modalAsset.symbol === "TYR" ? 0 : 2);
                     setModalAmount(val);
                     setModalError("");
                   }}

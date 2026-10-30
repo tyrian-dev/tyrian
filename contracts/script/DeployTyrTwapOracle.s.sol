@@ -23,7 +23,7 @@ contract DeployTyrTwapOracleScript is Script {
     function run() external returns (address oracleAddress) {
         uint256 privateKey = vm.envUint("DEPLOYER_PRIVATE_KEY");
         address deployer = vm.addr(privateKey);
-        address tyrToken = vm.envAddress("TYR_ADDRESS");
+        address tyrToken = vm.envOr("TYRN_ADDRESS", vm.envOr("TYR_ADDRESS", address(0)));
         address quoteToken = vm.envAddress("QUOTE_TOKEN");
         address pool = vm.envAddress("UNISWAP_POOL");
         address quoteFeed = vm.envOr("QUOTE_FEED", address(0));
@@ -42,8 +42,8 @@ contract DeployTyrTwapOracleScript is Script {
 
             // Verify manifest matches
             string memory json = vm.readFile(ManifestReader.path(vm, "mainnet"));
-            address manifestTyr = ManifestReader.readAddress(vm, json, ".tokens.TYR.address");
-            MainnetGuards.requireManifestMatch(tyrToken, manifestTyr, "tokens.TYR.address");
+            address manifestTyr = ManifestReader.readAddress(vm, json, ".tokens.TYRN.address");
+            MainnetGuards.requireManifestMatch(tyrToken, manifestTyr, "tokens.TYRN.address");
         }
 
         vm.startBroadcast(privateKey);

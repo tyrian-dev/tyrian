@@ -10,8 +10,8 @@
   "contracts": {
     "StakeManager": "0x385eb43a7ffad276931c34826909c07f2e13c076",
     "UsdgVault": "0x9b3ed1fe94a2e6fffad9cf5212c30e29ab88284c",
-    "FeeSplitter": "0x1f5ccf2e9c0e41284dd4784868ea45aea2f7274a",
-    "BuybackBurner": "0xd2b3f99b8e9d3ebba404ed1178a8103976b8b70b",
+    "FeeSplitter": null,
+    "BuybackBurner": null,
     "TreasuryRouter": "0xc168a738e2f7384a71d3e12e3058d8575deafd05",
     "PortfolioVault": "0xbf3d5a111bd82e44efe244793f1b0784a00b24f0",
     "TyrTwapOracle": null
@@ -22,9 +22,9 @@
       "address": "0x5fc5360D0400a0Fd4f2af552ADD042D716F1d168",
       "decimals": 6
     },
-    "TYR": {
-      "symbol": "TYR",
-      "address": "0xe7a401dc74196ed5aeb96f24f7ac5c02e1b793d7",
+    "TYRN": {
+      "symbol": "TYRN",
+      "address": null,
       "decimals": 18
     },
     "WETH": {
@@ -123,7 +123,7 @@
     "guardian": "0x56e335892745ed42228525BF74da8755924Ad740",
     "dexRouter": "0xcaf681a66d020601342297493863e78c959e5cb2",
     "morphoMarket": null,
-    "uniswapPool": "0x0f4b060831f70c86a4e8995b8d7b103659eb7564",
+    "uniswapPool": null,
     "ponsFeeWallet": null
   },
   "features": {

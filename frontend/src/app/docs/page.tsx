@@ -210,7 +210,7 @@ export default function DocsPage() {
             <section id="overview">
               <h2>Overview</h2>
               <p>
-                Tyrian is an AI gateway on Robinhood Chain. You stake USDG, Stock Tokens or $TYR. Yield from staked assets and 80% of $TYR creator fees pay for inference, so you never buy credits.
+                Tyrian is an AI gateway on Robinhood Chain. You stake USDG, Stock Tokens or $TYRN. Yield from staked assets and 80% of $TYRN creator fees pay for inference, so you never buy credits.
               </p>
               <p>
                 Your stake sets a daily quota in USD. Every request through the gateway is metered against it at the provider&apos;s price. Quota resets at <strong>00:00 UTC</strong>.
@@ -327,26 +327,26 @@ export default function DocsPage() {
                 <div className="code-bar">
                   <span>Formula</span>
                 </div>
-                <pre>{`quota_i = Σ_a  B_a × w_i,a ÷ Σ_j w_j,a   +   B_TYR × t_i ÷ Σ_j t_j
+                <pre>{`quota_i = Σ_a  B_a × w_i,a ÷ Σ_j w_j,a   +   B_TYRN × t_i ÷ Σ_j t_j
 
 w_i,a  = USD value of your stake in asset a × boost_i
-boost_i = 1 + 0.5 × min(1, $TYR value staked ÷ base asset value)   (max 1.5×)
-t_i    = $TYR you have staked`}</pre>
+boost_i = 1 + 0.5 × min(1, $TYRN value staked ÷ base asset value)   (max 1.5×)
+t_i    = $TYRN you have staked`}</pre>
               </div>
               <ul>
                 <li>
                   <strong>USDG pool:</strong> B = yield harvested yesterday × 0.9. The other 10% goes to reserve.
                 </li>
                 <li>
-                  <strong>Stock pool:</strong> 40% of the daily budget, funded by $TYR fees.
+                  <strong>Stock pool:</strong> 40% of the daily budget, funded by $TYRN fees.
                 </li>
                 <li>
-                  <strong>$TYR pool:</strong> the other 60% of the daily budget.
+                  <strong>$TYRN pool:</strong> the other 60% of the daily budget.
                 </li>
-                <li>Prices come from Chainlink for Stock Tokens and a 30-minute TWAP for $TYR.</li>
+                <li>Prices come from Chainlink for Stock Tokens and a 30-minute TWAP for $TYRN.</li>
               </ul>
               <div className="callout">
-                <strong>Example.</strong> The USDG pool harvested $300 yesterday, so B = $270. You stake 1,000 USDG of a 100,000 USDG pool with no $TYR. Your quota from this pool is $270 × 1% = <strong>$2.70 per day</strong>.
+                <strong>Example.</strong> The USDG pool harvested $300 yesterday, so B = $270. You stake 1,000 USDG of a 100,000 USDG pool with no $TYRN. Your quota from this pool is $270 × 1% = <strong>$2.70 per day</strong>.
               </div>
               <p>
                 Before a request goes out, the gateway estimates its maximum cost as model price × (input tokens + <code className="inline">max_tokens</code>). If that&apos;s more than you have left, it returns <code className="inline">402</code>. After the response, the actual cost from <code className="inline">usage</code> is deducted.

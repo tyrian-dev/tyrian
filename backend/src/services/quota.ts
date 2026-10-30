@@ -51,8 +51,8 @@ export function getAssetDecimals(symbolOrAddress: string): number {
   if (s === "usdg" || s === tyrianNetwork.tokens.USDG.address?.toLowerCase()) {
     return tyrianNetwork.tokens.USDG.decimals ?? 6;
   }
-  if (s === "tyr" || s === tyrianNetwork.tokens.TYR.address?.toLowerCase()) {
-    return tyrianNetwork.tokens.TYR.decimals ?? 18;
+  if (s === "tyrn" || s === "tyr" || s === tyrianNetwork.tokens.TYRN.address?.toLowerCase()) {
+    return tyrianNetwork.tokens.TYRN.decimals ?? 18;
   }
   if (s === "weth" || s === tyrianNetwork.tokens.WETH.address?.toLowerCase()) {
     return tyrianNetwork.tokens.WETH.decimals ?? 18;
@@ -97,7 +97,7 @@ export class QuotaService {
   private resolveAssetSymbol(assetAddress: string): string {
     const addr = assetAddress.toLowerCase();
     if (addr === tyrianNetwork.tokens.USDG.address?.toLowerCase()) return "USDG";
-    if (addr === tyrianNetwork.tokens.TYR.address?.toLowerCase()) return "TYR";
+    if (addr === tyrianNetwork.tokens.TYRN.address?.toLowerCase()) return "TYRN";
     if (addr === tyrianNetwork.tokens.WETH.address?.toLowerCase()) return "WETH";
 
     for (const [symbol, config] of Object.entries(tyrianNetwork.stocks)) {
@@ -154,7 +154,7 @@ export class QuotaService {
             ? sharesAmount * USDG_USD
             : await pricingService.getUsdValue(symbol, sharesAmount);
 
-      if (symbol === "TYR") {
+      if (symbol === "TYRN" || symbol === "TYR") {
         tyrStaked += sharesAmount;
       } else {
         totalEffectiveStakeUsd += usdValue;
@@ -254,7 +254,7 @@ export class QuotaService {
     }
 
     const tyrUsd =
-      userTyrAmount > 0 ? await pricingService.getUsdValue("TYR", userTyrAmount) : 0;
+      userTyrAmount > 0 ? await pricingService.getUsdValue("TYRN", userTyrAmount) : 0;
     const boost = calculateBoost(tyrUsd, userBaseUsd);
     const userWeightedStake = userBaseUsd * boost;
 

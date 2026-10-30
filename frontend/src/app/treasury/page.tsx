@@ -194,7 +194,7 @@ export default function TreasuryPage() {
       foot: "paid to AI providers",
     },
     {
-      label: "$TYR burned",
+      label: "$TYRN burned",
       val: fmtNum(burned),
       foot: "sent to 0x…dEaD",
     },
@@ -295,7 +295,7 @@ export default function TreasuryPage() {
     },
     {
       name: "BuybackBurner",
-      desc: "Buys $TYR and burns permanently",
+      desc: "Buys $TYRN and burns permanently",
       addr: activeNetwork.contracts.BuybackBurner,
     },
     {
@@ -326,7 +326,7 @@ export default function TreasuryPage() {
             <div className="eyebrow">Treasury</div>
             <h1>Every dollar, accounted for.</h1>
             <p className="lead">
-              Yield and 80% of $TYR creator fees flow in. Inference spend flows out. Quota can never exceed what came in, so the treasury can&apos;t run a deficit.
+              Yield and 80% of $TYRN creator fees flow in. Inference spend flows out. Quota can never exceed what came in, so the treasury can&apos;t run a deficit.
             </p>
           </div>
           <div className="aside">
@@ -624,12 +624,12 @@ export default function TreasuryPage() {
         <section className="section" aria-labelledby="feeH" style={{ paddingTop: 0 }}>
           <div className="section-title">
             <h2 id="feeH">Where fees go</h2>
-            <p>Every $TYR trade on pons pays a 1% pool fee. Tyrian&apos;s creator share is split by the FeeSplitter, which anyone can call.</p>
+            <p>Every $TYRN trade on pons pays a 1% pool fee. Tyrian&apos;s creator share is split by the FeeSplitter, which anyone can call.</p>
           </div>
           <div className="flowrow">
             <div data-reveal>
               <div className="pct">1%</div>
-              <p>Pool fee on every $TYR trade</p>
+              <p>Pool fee on every $TYRN trade</p>
             </div>
             <div data-reveal>
               <div className="pct">70%</div>
@@ -693,7 +693,7 @@ export default function TreasuryPage() {
               <br />
               Stock pool (80%) <b className="res">{fmtUSD(stockPoolBudget, 2)}</b>
               <br />
-              $TYR pool (20%) <b className="res">{fmtUSD(tyrPoolBudget, 2)}</b>
+              $TYRN pool (20%) <b className="res">{fmtUSD(tyrPoolBudget, 2)}</b>
               <br />
               <span style={{ fontSize: "12px", display: "block", marginTop: "8px", opacity: 0.8 }}>
                 USDG pool is funded by its own yield, not this budget. If the budget drops below 70% of its 7-day average, the reserve tops it up by at most 2% of principal per day.
@@ -826,7 +826,7 @@ export default function TreasuryPage() {
                           </a>
                         </small>
                       </span>
-                      <span className="amt">{fmtNum(b.amountNum)} TYR</span>
+                      <span className="amt">{fmtNum(b.amountNum)} TYRN</span>
                     </li>
                   ))}
                 </>

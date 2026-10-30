@@ -13,7 +13,7 @@ export type ContractName =
   | "PortfolioVault"
   | "TyrTwapOracle";
 
-export type TokenName = "USDG" | "TYR" | "WETH";
+export type TokenName = "USDG" | "TYRN" | "WETH";
 
 export interface TokenConfig {
   symbol: string;
@@ -242,7 +242,7 @@ const CONTRACT_NAMES: ContractName[] = [
   "TyrTwapOracle",
 ];
 
-const TOKEN_NAMES: TokenName[] = ["USDG", "TYR", "WETH"];
+const TOKEN_NAMES: TokenName[] = ["USDG", "TYRN", "WETH"];
 
 const VERIFICATION_VALUES: NetworkManifest["verification"][] = [
   "pending",
