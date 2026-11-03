@@ -186,7 +186,7 @@ function switchErrorMessage(error: unknown, phantom: boolean): string {
     error instanceof Error &&
     error.message === PHANTOM_NETWORK_MESSAGE
   ) {
-    return "Phantom is not on Robinhood Chain Testnet yet. In Phantom, open Settings → Active Networks, enable Robinhood Chain, then try again.";
+    return `Phantom is not on ${TARGET_CHAIN.name} yet. In Phantom, open Settings → Active Networks, enable Robinhood Chain, then try again.`;
   }
 
   if (error instanceof ChainNotChangedError) {

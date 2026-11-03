@@ -321,7 +321,7 @@ export class IndexerService {
 
       const items: StakePositionItem[] = [];
       for (const asset of assetsToCheck) {
-        const [activeShares, pendingShares, cooldownShares, earliestUnlockAt] = await client.readContract({
+        const [activeShares, pendingShares, pendingEpoch, cooldownShares, earliestUnlockAt] = await client.readContract({
           address: smAddress as `0x${string}`,
           abi: StakeManagerAbi,
           functionName: "positions",
@@ -337,6 +337,7 @@ export class IndexerService {
             pendingShares: pendingShares.toString(),
             cooldownShares: cooldownShares.toString(),
             earliestUnlockAt: earliestUnlockAt.toString(),
+            effectiveEpoch: (pendingEpoch + 1n).toString(),
             lastUpdatedBlock: "0",
           });
         }
@@ -344,6 +345,33 @@ export class IndexerService {
       return items;
     } catch {
       return [];
+    }
+  }
+
+  /**
+   * Directly queries on-chain positions from StakeManager.
+   * Useful for validating pending share maturation when indexer effectiveEpoch is unpopulated.
+   */
+  async getOnChainPosition(userAddress: string, assetAddress: string): Promise<{
+    activeShares: bigint;
+    pendingShares: bigint;
+    pendingEpoch: bigint;
+    cooldownShares: bigint;
+    earliestUnlockAt: bigint;
+  } | null> {
+    try {
+      const smAddress = tyrianNetwork.contracts.StakeManager;
+      if (!smAddress) return null;
+      const client = this.getPublicClient();
+      const [activeShares, pendingShares, pendingEpoch, cooldownShares, earliestUnlockAt] = await client.readContract({
+        address: smAddress as `0x${string}`,
+        abi: StakeManagerAbi,
+        functionName: "positions",
+        args: [userAddress.toLowerCase() as `0x${string}`, assetAddress.toLowerCase() as `0x${string}`],
+      });
+      return { activeShares, pendingShares, pendingEpoch, cooldownShares, earliestUnlockAt };
+    } catch {
+      return null;
     }
   }
 

@@ -19,6 +19,7 @@ export interface UserQuotaDetails {
     pendingShares: string;
     cooldownShares: string;
     estimatedUsdValue: number;
+    effectiveEpoch?: string;
   }[];
   cooldowns: {
     id: string;
@@ -139,9 +140,36 @@ export class QuotaService {
     let totalEffectiveStakeUsd = 0;
     let tyrStaked = 0;
 
+    const currentEpochNumber = BigInt(Math.floor(Date.now() / 86400000));
+
     const formattedPositions = [];
     for (const p of positions) {
       const symbol = this.resolveAssetSymbol(p.assetAddress);
+
+      // Dynamic pending shares rollover:
+      // When effectiveEpoch <= currentEpochNumber (or on-chain currentEpoch > pendingEpoch),
+      // the pending shares have matured and are active.
+      const effectiveEpoch = p.effectiveEpoch ? BigInt(p.effectiveEpoch) : 0n;
+      let isMatured = effectiveEpoch > 0n && currentEpochNumber >= effectiveEpoch;
+      const activeSharesBigInt = BigInt(p.activeShares || "0");
+      const pendingSharesBigInt = BigInt(p.pendingShares || "0");
+
+      if (!isMatured && pendingSharesBigInt > 0n && effectiveEpoch === 0n) {
+        try {
+          const onchainPos = await indexerService.getOnChainPosition(normalized, p.assetAddress);
+          if (onchainPos && onchainPos.pendingEpoch > 0n) {
+            isMatured = currentEpochNumber > onchainPos.pendingEpoch;
+          }
+        } catch {
+          // Ignore RPC failover error
+        }
+      }
+
+      const resolvedActiveShares = isMatured
+        ? (activeSharesBigInt + pendingSharesBigInt).toString()
+        : p.activeShares;
+      const resolvedPendingShares = isMatured ? "0" : p.pendingShares;
+
       // Effective shares = activeShares + pendingShares (pending will be active next epoch)
       const sharesAmount = formatUnitsAsset(p.activeShares, symbol) + formatUnitsAsset(p.pendingShares, symbol);
 
@@ -163,10 +191,11 @@ export class QuotaService {
       formattedPositions.push({
         asset: symbol,
         assetAddress: p.assetAddress,
-        activeShares: p.activeShares,
-        pendingShares: p.pendingShares,
+        activeShares: resolvedActiveShares,
+        pendingShares: resolvedPendingShares,
         cooldownShares: p.cooldownShares,
         estimatedUsdValue: usdValue,
+        effectiveEpoch: p.effectiveEpoch,
       });
     }
 

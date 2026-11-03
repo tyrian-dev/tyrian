@@ -41,6 +41,7 @@ const SECTIONS = [
   { id: "errors", title: "Errors and limits" },
   { id: "staking", title: "Staking rules" },
   { id: "network", title: "Network" },
+  { id: "wallets", title: "Team & governance" },
 ];
 
 const KEYWORDS =
@@ -520,6 +521,125 @@ t_i    = $TYRN you have staked`}</pre>
                 </Link>{" "}
                 after deployment.
               </p>
+            </section>
+
+            <section id="wallets">
+              <h2>Team &amp; governance wallets</h2>
+              <p>
+                Full transparency disclosure of protocol deployer, multisig signers, and governance addresses to address on-chain linked wallet queries and audit trail requirements.
+              </p>
+              <div className="table-wrap">
+                <table className="data">
+                  <thead>
+                    <tr>
+                      <th>Role</th>
+                      <th>Address</th>
+                      <th>Holds $TYRN?</th>
+                      <th>Lock / Vesting</th>
+                    </tr>
+                  </thead>
+                  <tbody>
+                    <tr>
+                      <td>Deployer EOA</td>
+                      <td className="mono" style={{ overflowWrap: "anywhere" }}>
+                        <a
+                          href="https://robinhoodchain.blockscout.com/address/0x911Bf0fd05A53eC2d06952Ee2Fca8b17CBeA3Bad"
+                          target="_blank"
+                          rel="noreferrer"
+                          style={{ textDecoration: "underline" }}
+                        >
+                          0x911Bf0fd05A53eC2d06952Ee2Fca8b17CBeA3Bad ↗
+                        </a>
+                      </td>
+                      <td>No (0 TYRN)</td>
+                      <td>N/A (Deployer only; non-owner)</td>
+                    </tr>
+                    <tr>
+                      <td>Treasury Safe (2-of-3)</td>
+                      <td className="mono" style={{ overflowWrap: "anywhere" }}>
+                        <a
+                          href="https://robinhoodchain.blockscout.com/address/0x56e335892745ed42228525BF74da8755924Ad740"
+                          target="_blank"
+                          rel="noreferrer"
+                          style={{ textDecoration: "underline" }}
+                        >
+                          0x56e335892745ed42228525BF74da8755924Ad740 ↗
+                        </a>
+                      </td>
+                      <td>Protocol Reserve / Fees</td>
+                      <td>2-of-3 Multi-sig execution</td>
+                    </tr>
+                    <tr>
+                      <td>Safe Signer 1</td>
+                      <td className="mono" style={{ overflowWrap: "anywhere" }}>
+                        <a
+                          href="https://robinhoodchain.blockscout.com/address/0x21956BF41857869aed193b899678b8b4AC24e485"
+                          target="_blank"
+                          rel="noreferrer"
+                          style={{ textDecoration: "underline" }}
+                        >
+                          0x21956BF41857869aed193b899678b8b4AC24e485 ↗
+                        </a>
+                      </td>
+                      <td>No</td>
+                      <td>Safe authorization key 1</td>
+                    </tr>
+                    <tr>
+                      <td>Safe Signer 2</td>
+                      <td className="mono" style={{ overflowWrap: "anywhere" }}>
+                        <a
+                          href="https://robinhoodchain.blockscout.com/address/0xB1Ce61a8851Db965034D48Ee39b9d80429d21834"
+                          target="_blank"
+                          rel="noreferrer"
+                          style={{ textDecoration: "underline" }}
+                        >
+                          0xB1Ce61a8851Db965034D48Ee39b9d80429d21834 ↗
+                        </a>
+                      </td>
+                      <td>No</td>
+                      <td>Safe authorization key 2</td>
+                    </tr>
+                    <tr>
+                      <td>Safe Signer 3</td>
+                      <td className="mono" style={{ overflowWrap: "anywhere" }}>
+                        <a
+                          href="https://robinhoodchain.blockscout.com/address/0x1a6Dd8dB12F6BD6FDC610a9e3727E198ED27Cc71"
+                          target="_blank"
+                          rel="noreferrer"
+                          style={{ textDecoration: "underline" }}
+                        >
+                          0x1a6Dd8dB12F6BD6FDC610a9e3727E198ED27Cc71 ↗
+                        </a>
+                      </td>
+                      <td>No</td>
+                      <td>Safe authorization key 3</td>
+                    </tr>
+                    <tr>
+                      <td>Timelock Controller</td>
+                      <td className="mono" style={{ overflowWrap: "anywhere" }}>
+                        <a
+                          href="https://robinhoodchain.blockscout.com/address/0xF186099CEa81E01A3Bd71a92b830b8bEB50d9E00"
+                          target="_blank"
+                          rel="noreferrer"
+                          style={{ textDecoration: "underline" }}
+                        >
+                          0xF186099CEa81E01A3Bd71a92b830b8bEB50d9E00 ↗
+                        </a>
+                      </td>
+                      <td>N/A</td>
+                      <td>48-Hour delay on all parameter calls</td>
+                    </tr>
+                    <tr>
+                      <td>Team / Contributor Tokens</td>
+                      <td className="mono" style={{ overflowWrap: "anywhere" }}>
+                        Pending Founder Disclosure
+                      </td>
+                      <td>Disclosed on launch</td>
+                      <td>Subject to vesting schedule</td>
+                    </tr>
+                  </tbody>
+                </table>
+              </div>
             </section>
           </article>
         </div>

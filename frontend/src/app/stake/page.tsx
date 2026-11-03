@@ -26,6 +26,7 @@ interface LivePositionItem {
   pendingShares: string;
   cooldownShares: string;
   estimatedUsdValue: number;
+  effectiveEpoch?: string;
 }
 
 interface CooldownItem {
@@ -601,7 +602,11 @@ export default function StakePage() {
               const amountError = Boolean(val) && (!Number.isFinite(numeric) || numeric <= 0 || numeric > available);
               const canStake = Boolean(val) && !amountError;
               const tokenAddr = resolveAssetAddress(asset.symbol);
-              const isConfiguredOnChain = Boolean(tokenAddr);
+              const isConfiguredOnChain =
+                Boolean(tokenAddr) &&
+                (asset.symbol === "TYRN" || asset.symbol === "TYR"
+                  ? activeNetwork.name === "testnet" || Boolean(activeNetwork.contracts.TyrTwapOracle)
+                  : true);
 
               return (
                 <div key={asset.symbol} className="tilt">
@@ -706,7 +711,9 @@ export default function StakePage() {
                         {!isConnected
                           ? "Connect wallet"
                           : !isConfiguredOnChain
-                            ? "Coming soon on testnet"
+                            ? activeNetwork.name === "testnet"
+                              ? "Coming soon on testnet"
+                              : "Coming soon"
                             : amountError
                               ? "Insufficient balance"
                               : `Stake ${asset.symbol}`}
@@ -769,8 +776,15 @@ export default function StakePage() {
                     {livePositions.map((pos) => {
                       const decimals = getAssetDecimals(pos.asset);
                       const factor = 10 ** decimals;
-                      const activeAmt = Number(pos.activeShares) / factor;
-                      const pendingAmt = Number(pos.pendingShares) / factor;
+
+                      // Dynamic rollover: if effectiveEpoch has elapsed, pending shares count as active
+                      const currentEpoch = Math.floor(Date.now() / 86400000);
+                      const isMatured = pos.effectiveEpoch ? currentEpoch >= Number(pos.effectiveEpoch) : false;
+                      const activeSharesBigInt = BigInt(pos.activeShares || "0") + (isMatured && Number(pos.pendingShares) > 0 ? BigInt(pos.pendingShares || "0") : 0n);
+                      const pendingSharesBigInt = isMatured ? 0n : BigInt(pos.pendingShares || "0");
+
+                      const activeAmt = Number(activeSharesBigInt) / factor;
+                      const pendingAmt = Number(pendingSharesBigInt) / factor;
                       const totalAmt = activeAmt + pendingAmt;
                       if (totalAmt <= 0) return null;
 

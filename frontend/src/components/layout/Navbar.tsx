@@ -9,6 +9,7 @@ import { useAccount } from "wagmi";
 import { useTyrianSession } from "@/providers/TyrianSessionProvider";
 import { useWalletOnboarding } from "@/hooks/useWalletOnboarding";
 import { TARGET_CHAIN, TARGET_CHAIN_ID } from "@/lib/wallet/targetChain";
+import { activeNetwork } from "@shared/contracts/addresses";
 
 type ViewTransitionDocument = Document & {
   startViewTransition?: (callback: () => void) => { ready: Promise<void> };
@@ -363,7 +364,7 @@ export function Navbar() {
               <a
                 id="acctExplorer"
                 role="menuitem"
-                href={`${TARGET_CHAIN.blockExplorers?.default.url ?? "https://explorer.testnet.chain.robinhood.com"}/address/${account.address}`}
+                href={`${TARGET_CHAIN.blockExplorers?.default.url ?? activeNetwork.explorer}/address/${account.address}`}
                 target="_blank"
                 rel="noopener noreferrer"
                 onClick={() => setAcctMenuOpen(false)}

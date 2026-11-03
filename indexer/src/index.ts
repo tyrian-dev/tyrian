@@ -1,6 +1,8 @@
 import { ponder } from "ponder:registry";
 import {
+  getNetworkManifest,
   getStockVaults,
+  isAddress,
   resolveNetworkName,
 } from "../../shared/contracts/addresses";
 import {
@@ -152,23 +154,26 @@ ponder.on("StakeManager:AssetConfigUpdated", async ({ event, context }) => {
     .onConflictDoNothing();
 });
 
-ponder.on("UsdgVault:Harvested", async ({ event, context }) => {
-  const { asset, yieldAmount, treasury } = event.args;
-
-  await context.db.insert(harvestEvent).values({
-    id: `${event.transaction.hash}-${event.log.logIndex}`,
-    token: asset.toLowerCase(),
-    yieldAmount,
-    treasury: treasury.toLowerCase(),
-    txHash: event.transaction.hash,
-    blockTimestamp: event.block.timestamp,
-  });
-});
-
 const activeNetworkName = resolveNetworkName(
   process.env.INDEXER_NETWORK ?? process.env.TYRIAN_NETWORK ?? process.env.APP_ENV,
 );
+const activeManifest = getNetworkManifest(activeNetworkName);
 const activeStockVaults = getStockVaults(activeNetworkName);
+
+if (isAddress(activeManifest.contracts.UsdgVault)) {
+  ponder.on("UsdgVault:Harvested", async ({ event, context }) => {
+    const { asset, yieldAmount, treasury } = event.args;
+
+    await context.db.insert(harvestEvent).values({
+      id: `${event.transaction.hash}-${event.log.logIndex}`,
+      token: asset.toLowerCase(),
+      yieldAmount,
+      treasury: treasury.toLowerCase(),
+      txHash: event.transaction.hash,
+      blockTimestamp: event.block.timestamp,
+    });
+  });
+}
 
 if (activeStockVaults.length > 0) {
   ponder.on("StockVault:Harvested", async ({ event, context }) => {
@@ -185,68 +190,74 @@ if (activeStockVaults.length > 0) {
   });
 }
 
-ponder.on("FeeSplitter:FeesSplit", async ({ event, context }) => {
-  const { token, treasuryAmt, buybackAmt } = event.args;
+if (isAddress(activeManifest.contracts.FeeSplitter)) {
+  ponder.on("FeeSplitter:FeesSplit", async ({ event, context }) => {
+    const { token, treasuryAmt, buybackAmt } = event.args;
 
-  await context.db.insert(feeSplitEvent).values({
-    id: `${event.transaction.hash}-${event.log.logIndex}`,
-    token: token.toLowerCase(),
-    treasuryAmount: treasuryAmt,
-    buybackAmount: buybackAmt,
-    txHash: event.transaction.hash,
-    blockTimestamp: event.block.timestamp,
+    await context.db.insert(feeSplitEvent).values({
+      id: `${event.transaction.hash}-${event.log.logIndex}`,
+      token: token.toLowerCase(),
+      treasuryAmount: treasuryAmt,
+      buybackAmount: buybackAmt,
+      txHash: event.transaction.hash,
+      blockTimestamp: event.block.timestamp,
+    });
   });
-});
 
-ponder.on("FeeSplitter:Burned", async ({ event, context }) => {
-  const { token, amount, source } = event.args;
+  ponder.on("FeeSplitter:Burned", async ({ event, context }) => {
+    const { token, amount, source } = event.args;
 
-  await context.db.insert(burnEvent).values({
-    id: `${event.transaction.hash}-${event.log.logIndex}`,
-    token: token.toLowerCase(),
-    amount,
-    source: burnSource(Number(source)),
-    txHash: event.transaction.hash,
-    blockTimestamp: event.block.timestamp,
+    await context.db.insert(burnEvent).values({
+      id: `${event.transaction.hash}-${event.log.logIndex}`,
+      token: token.toLowerCase(),
+      amount,
+      source: burnSource(Number(source)),
+      txHash: event.transaction.hash,
+      blockTimestamp: event.block.timestamp,
+    });
   });
-});
+}
 
-ponder.on("BuybackBurner:Burned", async ({ event, context }) => {
-  const { token, amount, source } = event.args;
+if (isAddress(activeManifest.contracts.BuybackBurner)) {
+  ponder.on("BuybackBurner:Burned", async ({ event, context }) => {
+    const { token, amount, source } = event.args;
 
-  await context.db.insert(burnEvent).values({
-    id: `${event.transaction.hash}-${event.log.logIndex}`,
-    token: token.toLowerCase(),
-    amount,
-    source: burnSource(Number(source)),
-    txHash: event.transaction.hash,
-    blockTimestamp: event.block.timestamp,
+    await context.db.insert(burnEvent).values({
+      id: `${event.transaction.hash}-${event.log.logIndex}`,
+      token: token.toLowerCase(),
+      amount,
+      source: burnSource(Number(source)),
+      txHash: event.transaction.hash,
+      blockTimestamp: event.block.timestamp,
+    });
   });
-});
+}
 
-ponder.on("TreasuryRouter:Routed", async ({ event, context }) => {
-  const { usdgIn, budgetOut, reserveOut, portfolioOut } = event.args;
+if (isAddress(activeManifest.contracts.TreasuryRouter)) {
+  ponder.on("TreasuryRouter:Routed", async ({ event, context }) => {
+    const { usdgIn, budgetOut, reserveOut, portfolioOut } = event.args;
 
-  await context.db.insert(treasuryRoutedEvent).values({
-    id: `${event.transaction.hash}-${event.log.logIndex}`,
-    usdgIn,
-    budgetOut,
-    reserveOut,
-    portfolioOut,
-    txHash: event.transaction.hash,
-    blockTimestamp: event.block.timestamp,
+    await context.db.insert(treasuryRoutedEvent).values({
+      id: `${event.transaction.hash}-${event.log.logIndex}`,
+      usdgIn,
+      budgetOut,
+      reserveOut,
+      portfolioOut,
+      txHash: event.transaction.hash,
+      blockTimestamp: event.block.timestamp,
+    });
   });
-});
 
-ponder.on("TreasuryRouter:SplitUpdated", async ({ event, context }) => {
-  const { budgetBps, reserveBps, portfolioBps } = event.args;
+  ponder.on("TreasuryRouter:SplitUpdated", async ({ event, context }) => {
+    const { budgetBps, reserveBps, portfolioBps } = event.args;
 
-  await context.db.insert(treasurySplitEvent).values({
-    id: `${event.transaction.hash}-${event.log.logIndex}`,
-    budgetBps,
-    reserveBps,
-    portfolioBps,
-    txHash: event.transaction.hash,
-    blockTimestamp: event.block.timestamp,
+    await context.db.insert(treasurySplitEvent).values({
+      id: `${event.transaction.hash}-${event.log.logIndex}`,
+      budgetBps,
+      reserveBps,
+      portfolioBps,
+      txHash: event.transaction.hash,
+      blockTimestamp: event.block.timestamp,
+    });
   });
-});
+}
